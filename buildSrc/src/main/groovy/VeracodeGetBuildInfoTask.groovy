@@ -24,16 +24,37 @@
  * SOFTWARE.
  ******************************************************************************/
 
-class VeracodeScanResultsTask extends VeracodeTask {
-    static final String NAME = 'veracodeScanResults'
+class VeracodeGetBuildInfoTask extends VeracodeTask {
+    static final String NAME = 'veracodeGetBuildInfo'
 
-    VeracodeScanResultsTask() {
-        description = 'Gets the Veracode scan results based on the build id passed in'
-        requiredArguments << 'build_id'
+    VeracodeGetBuildInfoTask() {
+        description = "Lists build information for the given applicaiton ID. If no build ID is provided, the latest will be used"
+        requiredArguments << 'app_id' << "build_id${VeracodeTask.OPTIONAL}"
     }
 
     void run() {
-        String xmlResponse = loginResults().detailedReport(project.build_id)
-        writeXml('build/scan-results.xml', xmlResponse)
+        String response
+        String file
+        if (project.hasProperty('build_id')) {
+            response = loginUpdate().getBuildInfo(project.app_id, project.build_id)
+            file = "build/build-info-${project.build_id}.xml"
+        } else {
+            response = loginUpdate().getBuildInfo(project.app_id)
+            file = 'build/build-info-latest.xml'
+        }
+        Node buildInfo = writeXml(file, response)
+        printf "app_id=%s\n", buildInfo.@app_id
+        buildInfo.each() { build ->
+            println "[build]"
+            build.attributes().each() { k, v ->
+                println "$k=$v"
+            }
+            build.children().each { child ->
+                println "\t[analysis_unit]"
+                child.attributes().each() { k, v ->
+                    println "\t$k=$v"
+                }
+            }
+        }
     }
 }

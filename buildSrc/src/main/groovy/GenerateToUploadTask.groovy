@@ -1,15 +1,41 @@
+/*******************************************************************************
+ * MIT License
+ *
+ * Copyright (c) 2017 Calgary Scientific Incorporated
+ *
+ * Copyright (c) 2013-2014 kctang
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ ******************************************************************************/
+
 class GenerateToUploadTask extends VeracodeTask {
-	static final String NAME = 'generateToUpload'
+    static final String NAME = 'generateToUpload'
 
-	GenerateToUploadTask() {
-		description = "Grabs all jar files from the dir provided and filter it into a the 'build/to-upload' folder"
-		requiredArguments << 'dir' << "force${VeracodeTask.OPTIONAL}"
-	}
+    GenerateToUploadTask() {
+        description = "Grabs all jar files from the given dir and copies them into a the 'build/to-upload' folder"
+        requiredArguments << 'dir' << "force${VeracodeTask.OPTIONAL}"
+    }
 
-	void run() {
-		List<File> files = []
+    void run() {
+        List<File> files = []
 
-		// prevent uploading if "to-upload" is not empty unless user force
+        // prevent uploading if "to-upload" is not empty unless user force
         if (!project.hasProperty('force')) {
             File toUploadDir = new File('build/to-upload')
             if (toUploadDir.isDirectory() && toUploadDir.list().size() > 0) {
@@ -40,5 +66,5 @@ class GenerateToUploadTask extends VeracodeTask {
         }
 
         println "${files.size()} file(s) copied to build/to-upload"
-	}
+    }
 }

@@ -24,16 +24,29 @@
  * SOFTWARE.
  ******************************************************************************/
 
-class VeracodeScanResultsTask extends VeracodeTask {
-    static final String NAME = 'veracodeScanResults'
+class VeracodeSandboxGetPreScanResultsTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxGetPreScanResults'
 
-    VeracodeScanResultsTask() {
-        description = 'Gets the Veracode scan results based on the build id passed in'
-        requiredArguments << 'build_id'
+    VeracodeSandboxGetPreScanResultsTask() {
+        group = 'Veracode Sandbox'
+        description = 'Gets the pre-scan results for the given application ID and sandbox ID'
+        requiredArguments << 'app_id' << 'sandbox_id' << "build_id${OPTIONAL}"
     }
 
     void run() {
-        String xmlResponse = loginResults().detailedReport(project.build_id)
-        writeXml('build/scan-results.xml', xmlResponse)
+        String response
+        String file
+        if (project.hasProperty('build_id')) {
+            response = loginUpdate().getPreScanResults(project.app_id, project.build_id, project.sandbox_id)
+            file = "build/sandbox-pre-scan-results-${project.build_id}.xml"
+        } else {
+            response = loginUpdate().getPreScanResults(project.app_id, "", project.sandbox_id)
+            file = 'build/sandbox-pre-scan-results-latest.xml'
+        }
+        Node xml = writeXml(file, response)
+        xml.each() { node ->
+            printf "app_id=%-10s sandbox_id=%-10s build_id=%-10s id=%-10s name=\"%s\" status=\"%s\"\n",
+                    xml.@app_id, xml.@sandbox_id, xml.@build_id, node.@id, node.@name, node.@status
+        }
     }
 }

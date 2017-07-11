@@ -24,16 +24,22 @@
  * SOFTWARE.
  ******************************************************************************/
 
-class VeracodeScanResultsTask extends VeracodeTask {
-    static final String NAME = 'veracodeScanResults'
+class VeracodeSandboxBeginPreScanTask extends VeracodeTask {
+	static final String NAME = 'veracodeSandboxBeginPreScan'
 
-    VeracodeScanResultsTask() {
-        description = 'Gets the Veracode scan results based on the build id passed in'
-        requiredArguments << 'build_id'
-    }
+	VeracodeSandboxBeginPreScanTask() {
+		group = 'Veracode Sandbox'
+		description = 'Begin Veracode pre-scan for the given application ID and sanbox ID'
+		requiredArguments << 'app_id' << 'sandbox_id'
+	}
 
-    void run() {
-        String xmlResponse = loginResults().detailedReport(project.build_id)
-        writeXml('build/scan-results.xml', xmlResponse)
-    }
+	void run() {
+		String file = 'build/sandbox-begin-pre-scan.xml'
+		Node xml = writeXml(
+			file,
+			loginUpdate().beginPreScan(project.app_id, project.sandbox_id)
+		)
+		printf "app_id=%-10s sandbox_id=%-10s build_id=%-10s version=\"%s\" status=\"%s\"\n",
+			xml.@app_id, xml.@sandbox_id, xml.@build_id, xml.build.@version, xml.build.analysis_unit.@status
+	}
 }

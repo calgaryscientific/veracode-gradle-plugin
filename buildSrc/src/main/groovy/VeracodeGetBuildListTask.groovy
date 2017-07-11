@@ -24,16 +24,23 @@
  * SOFTWARE.
  ******************************************************************************/
 
-class VeracodeScanResultsTask extends VeracodeTask {
-    static final String NAME = 'veracodeScanResults'
+class VeracodeGetBuildListTask extends VeracodeTask {
+    static final String NAME = 'veracodeGetBuildList'
 
-    VeracodeScanResultsTask() {
-        description = 'Gets the Veracode scan results based on the build id passed in'
-        requiredArguments << 'build_id'
+    VeracodeGetBuildListTask() {
+        description = 'List builds for the given aplication ID'
+        requiredArguments << 'app_id'
     }
 
     void run() {
-        String xmlResponse = loginResults().detailedReport(project.build_id)
-        writeXml('build/scan-results.xml', xmlResponse)
+        String file = 'build/build-list.xml'
+        Node xml = writeXml(
+                file,
+                loginUpdate().getBuildList(project.app_id)
+        )
+        xml.each() { build ->
+            printf "app_id=%-10s build_id=%-10s version=\"%s\"\n",
+                    xml.@app_id, build.@build_id, build.@version
+        }
     }
 }

@@ -24,26 +24,39 @@
  * SOFTWARE.
  ******************************************************************************/
 
-class VeracodeFileListTask extends VeracodeTask {
-    static final String NAME = 'veracodeFileList'
+class VeracodeSandboxGetBuildInfoTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxGetBuildInfo'
 
-    VeracodeFileListTask() {
-        description = "Lists all files under the latest build for the application id passed in. If a build id is provided, the files under that build will be listed instead"
-        requiredArguments << 'app_id' << "build_id${VeracodeTask.OPTIONAL}"
+    VeracodeSandboxGetBuildInfoTask() {
+        group = 'Veracode Sandbox'
+        description = "Lists build information for the given applicaiton ID and sandbox ID. If no build ID is provided, the latest will be used"
+        requiredArguments << 'app_id' << 'sandbox_id' << "build_id${VeracodeTask.OPTIONAL}"
     }
 
     void run() {
-        String xmlResponse
+        String response
+        String file
         if (project.hasProperty('build_id')) {
-            xmlResponse = loginUpdate().getFileList(project.app_id, project.build_id)
+            response = loginUpdate().getBuildInfo(project.app_id, project.build_id, project.sandbox_id)
+            file = "build/sandbox-build-info-${project.build_id}.xml"
         } else {
-            xmlResponse = loginUpdate().getFileList(project.app_id)
+            response = loginUpdate().getBuildInfo(project.app_id, "", project.sandbox_id)
+            file = 'build/sandbox-build-info-latest.xml'
         }
-        Node filelist = writeXml('build/file-list.xml', xmlResponse)
-        filelist.each() { file ->
-            println "${file.@file_name}=${file.@file_status}"
+        Node buildInfo = writeXml(file, response)
+        printf "app_id=%s\n", buildInfo.@app_id
+        printf "sandbox_id=%s\n", buildInfo.@sandbox_id
+        buildInfo.each() { build ->
+            println "[build]"
+            build.attributes().each() { k, v ->
+                println "$k=$v"
+            }
+            build.children().each { child ->
+                println "\t[analysis_unit]"
+                child.attributes().each() { k, v ->
+                    println "\t$k=$v"
+                }
+            }
         }
-        println ''
-        println 'Total files = ' + filelist.children().size()
     }
 }

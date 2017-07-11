@@ -24,16 +24,28 @@
  * SOFTWARE.
  ******************************************************************************/
 
-class VeracodeScanResultsTask extends VeracodeTask {
-    static final String NAME = 'veracodeScanResults'
+class VeracodeGetPreScanResultsTask extends VeracodeTask {
+    static final String NAME = 'veracodeGetPreScanResults'
 
-    VeracodeScanResultsTask() {
-        description = 'Gets the Veracode scan results based on the build id passed in'
-        requiredArguments << 'build_id'
+    VeracodeGetPreScanResultsTask() {
+        description = 'Gets the pre-scan results for the given application ID'
+        requiredArguments << 'app_id' << "build_id${OPTIONAL}"
     }
 
     void run() {
-        String xmlResponse = loginResults().detailedReport(project.build_id)
-        writeXml('build/scan-results.xml', xmlResponse)
+        String response
+        String file
+        if (project.hasProperty('build_id')) {
+            response = loginUpdate().getPreScanResults(project.app_id, project.build_id)
+            file = "build/pre-scan-results-${project.build_id}.xml"
+        } else {
+            response = loginUpdate().getPreScanResults(project.app_id)
+            file = 'build/pre-scan-results-latest.xml'
+        }
+        Node xml = writeXml(file, response)
+        xml.each() { node ->
+            printf "app_id=%-10s build_id=%-10s id=%-10s name=\"%s\" status=\"%s\"\n",
+                    xml.@app_id, xml.@build_id, node.@id, node.@name, node.@status
+        }
     }
 }
