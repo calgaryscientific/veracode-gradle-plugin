@@ -24,28 +24,41 @@
  * SOFTWARE.
  ******************************************************************************/
 
-class VeracodeScanTask extends VeracodeTask {
-    static final String NAME = 'veracodeScan'
+class VeracodeBeginScanTask extends VeracodeTask {
+    static final String NAME = 'veracodeBeginScan'
 
-    VeracodeScanTask() {
-        description = 'Starts a Veracode scan for the application id passed in'
+    VeracodeBeginScanTask() {
+        description = 'Starts a Veracode scan for given application ID'
         requiredArguments << 'app_id'
     }
 
     void run() {
+        String file = 'build/begin-scan.xml'
+        String preScanFile = 'build/pre-scan-results-latest.xml'
         def moduleIds = []
-        def whiteList = readListFromFile(new File("src/apps/${project.app_id}/modules-whitelist.txt"))
-        readXml('build/pre-scan-results.xml').each() { module ->
-            if (whiteList.contains(module.@name)) {
+        readXml(preScanFile).each() { module ->
+            if (!module.@status.startsWith("(Fatal)")) {
                 moduleIds << module.@id
+                printf "Selecting module: %s - %s\n", module.@name, module.@status
+            } else {
+                printf "WARNING: Skipping failed module: %s - %s\n", module.@name, module.@status
             }
         }
-        println "Modules in whitelist: ${whiteList.size()}"
-        println "Modules selected: ${moduleIds.size()}"
-        if (whiteList.size() != moduleIds.size()) {
-            println 'WARNING: Not all the files in whitelist are being scanned. Some modules no longer exist? Manual whitelist maintenance should be performed.'
+        println "Modules found: ${moduleIds.size()}"
+        println "Modules found: ${moduleIds.join(",")}"
+        Node xml = writeXml(
+                file,
+                loginUpdate().beginScan(
+                        project.app_id,
+                        moduleIds.join(","),
+                        "", // scan_all_top_level_modules
+                        "scan_selected_modules",
+                        "") // scan_previously_selected_modules
+        )
+        xml.each() { node ->
+            printf "app_id=%-10s sandbox_id=%-10s build_id=%-10s id=%-10s name=\"%s\" status=\"%s\"\n",
+                    xml.@app_id, xml.@sandbox_id, xml.@build_id, node.@id, node.@name, node.@status
         }
-
-        writeXml('build/scan.xml', loginUpdate().beginScan(project.app_id, moduleIds.join(","), 'false'))
     }
 }
+

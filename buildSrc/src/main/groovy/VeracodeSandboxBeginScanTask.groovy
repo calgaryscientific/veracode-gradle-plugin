@@ -38,7 +38,7 @@ class VeracodeSandboxBeginScanTask extends VeracodeTask {
         String preScanFile = 'build/sandbox-pre-scan-results-latest.xml'
         def moduleIds = []
         readXml(preScanFile).each() { module ->
-            if (module.@status == "OK") {
+            if (!module.@status.startsWith("(Fatal)")) {
                 moduleIds << module.@id
                 printf "Selecting module: %s - %s\n", module.@name, module.@status
             } else {
@@ -55,8 +55,7 @@ class VeracodeSandboxBeginScanTask extends VeracodeTask {
                         "", // scan_all_top_level_modules
                         "scan_selected_modules",
                         "", // scan_previously_selected_modules
-                        project.sandbox_id
-                )
+                        project.sandbox_id)
         )
         xml.each() { node ->
             printf "app_id=%-10s sandbox_id=%-10s build_id=%-10s id=%-10s name=\"%s\" status=\"%s\"\n",

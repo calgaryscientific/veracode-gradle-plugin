@@ -42,7 +42,7 @@ class VeracodePlugin implements Plugin<Project> {
         project.task(VeracodeUploadFileTask.NAME, type: VeracodeUploadFileTask)
         project.task(VeracodePreScanTask.NAME, type: VeracodePreScanTask)
         project.task(VeracodeGetPreScanResultsTask.NAME, type: VeracodeGetPreScanResultsTask)
-        project.task(VeracodeScanTask.NAME, type: VeracodeScanTask)
+        project.task(VeracodeBeginScanTask.NAME, type: VeracodeBeginScanTask)
         def veracodeScanResultsTask = project.task(VeracodeScanResultsTask.NAME, type: VeracodeScanResultsTask)
         project.task(VeracodeScanResultsInCsvTask.NAME, type: VeracodeScanResultsInCsvTask, dependsOn: veracodeScanResultsTask)
         project.task(VeracodeRemoveFileTask.NAME, type: VeracodeRemoveFileTask)
