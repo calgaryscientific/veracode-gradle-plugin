@@ -37,10 +37,10 @@ class VeracodeSandboxGetPreScanResultsTask extends VeracodeTask {
         String response
         String file
         if (project.hasProperty('build_id')) {
-            response = loginUpdate().getPreScanResults(project.app_id, project.build_id, project.sandbox_id)
+            response = uploadAPI().getPreScanResults(project.app_id, project.build_id, project.sandbox_id)
             file = "build/sandbox-pre-scan-results-${project.build_id}.xml"
         } else {
-            response = loginUpdate().getPreScanResults(project.app_id, "", project.sandbox_id)
+            response = uploadAPI().getPreScanResults(project.app_id, "", project.sandbox_id)
             file = 'build/sandbox-pre-scan-results-latest.xml'
         }
         Node xml = writeXml(file, response)

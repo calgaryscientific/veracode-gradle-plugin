@@ -37,7 +37,7 @@ class VeracodeSandboxGetBuildListTask extends VeracodeTask {
         String file = 'build/sandbox-build-list.xml'
         Node xml = writeXml(
                 file,
-                loginUpdate().getBuildList(project.app_id, project.sandbox_id)
+                uploadAPI().getBuildList(project.app_id, project.sandbox_id)
         )
         xml.each() { build ->
             printf "app_id=%-10s sandbox_id=%-10s build_id=%-10s version=\"%s\"\n",

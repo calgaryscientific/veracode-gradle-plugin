@@ -36,7 +36,7 @@ class VeracodeGetBuildListTask extends VeracodeTask {
         String file = 'build/build-list.xml'
         Node xml = writeXml(
                 file,
-                loginUpdate().getBuildList(project.app_id)
+                uploadAPI().getBuildList(project.app_id)
         )
         xml.each() { build ->
             printf "app_id=%-10s build_id=%-10s version=\"%s\"\n",

@@ -95,24 +95,24 @@ abstract class VeracodeTask extends DefaultTask {
         arg.endsWith(OPTIONAL)
     }
 
-    protected UploadAPIWrapper loginUpdate() {
-        UploadAPIWrapper update = new UploadAPIWrapper()
+    protected UploadAPIWrapper uploadAPI() {
+        UploadAPIWrapper api = new UploadAPIWrapper()
         if (veracodeUser.apiCredentials) {
-            update.setUpApiCredentials(veracodeUser.id, veracodeUser.key)
+            api.setUpApiCredentials(veracodeUser.id, veracodeUser.key)
         } else {
-            update.setUpCredentials(veracodeUser.username, veracodeUser.password)
+            api.setUpCredentials(veracodeUser.username, veracodeUser.password)
         }
-        return update
+        return api
     }
 
     protected ResultsAPIWrapper loginResults() {
-        ResultsAPIWrapper results = new ResultsAPIWrapper()
+        ResultsAPIWrapper api = new ResultsAPIWrapper()
         if (veracodeUser.apiCredentials) {
-            update.setUpApiCredentials(veracodeUser.id, veracodeUser.key)
+            api.setUpApiCredentials(veracodeUser.id, veracodeUser.key)
         } else {
-            update.setUpCredentials(veracodeUser.username, veracodeUser.password)
+            api.setUpCredentials(veracodeUser.username, veracodeUser.password)
         }
-        return results
+        return api
     }
 
     protected Node writeXml(String filename, String content) {

@@ -33,6 +33,6 @@ class VeracodeDeleteBuildTask extends VeracodeTask {
     }
 
     void run() {
-        writeXml('build/delete-build.xml', loginUpdate().deleteBuild(project.app_id))
+        writeXml('build/delete-build.xml', uploadAPI().deleteBuild(project.app_id))
     }
 }

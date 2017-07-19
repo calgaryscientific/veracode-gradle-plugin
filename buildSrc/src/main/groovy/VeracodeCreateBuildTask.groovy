@@ -36,7 +36,7 @@ class VeracodeCreateBuildTask extends VeracodeTask {
         String file = 'build/create-build-list.xml'
         Node buildInfo = writeXml(
                 file,
-                loginUpdate().createBuild(project.app_id, project.build_version)
+                uploadAPI().createBuild(project.app_id, project.build_version)
         )
         if (buildInfo.name().equals('error')) {
             fail("ERROR: ${buildInfo.text()}\nSee ${file} for details!")

@@ -34,6 +34,6 @@ class VeracodeSandboxDeleteBuildTask extends VeracodeTask {
     }
 
     void run() {
-        writeXml('build/sandbox-delete-build.xml', loginUpdate().deleteBuild(project.app_id, project.sandbox_id))
+        writeXml('build/sandbox-delete-build.xml', uploadAPI().deleteBuild(project.app_id, project.sandbox_id))
     }
 }

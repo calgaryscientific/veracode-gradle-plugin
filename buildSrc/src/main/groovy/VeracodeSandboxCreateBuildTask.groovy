@@ -37,7 +37,7 @@ class VeracodeSandboxCreateBuildTask extends VeracodeTask {
         String file = 'build/sandbox-create-build-list.xml'
         Node buildInfo = writeXml(
                 file,
-                loginUpdate().createBuild(
+                uploadAPI().createBuild(
                         project.app_id,
                         project.build_version,
                         "", // platform

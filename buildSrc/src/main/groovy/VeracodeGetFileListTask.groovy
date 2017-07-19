@@ -35,9 +35,9 @@ class VeracodeGetFileListTask extends VeracodeTask {
     void run() {
         String xmlResponse
         if (project.hasProperty('build_id')) {
-            xmlResponse = loginUpdate().getFileList(project.app_id, project.build_id)
+            xmlResponse = uploadAPI().getFileList(project.app_id, project.build_id)
         } else {
-            xmlResponse = loginUpdate().getFileList(project.app_id)
+            xmlResponse = uploadAPI().getFileList(project.app_id)
         }
         Node filelist = writeXml('build/file-list.xml', xmlResponse)
         filelist.each() { file ->
