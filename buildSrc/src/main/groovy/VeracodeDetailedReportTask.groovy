@@ -24,16 +24,17 @@
  * SOFTWARE.
  ******************************************************************************/
 
-class VeracodeScanResultsTask extends VeracodeTask {
-    static final String NAME = 'veracodeScanResults'
+class VeracodeDetailedReportTask extends VeracodeTask {
+    static final String NAME = 'veracodeDetailedReport'
 
-    VeracodeScanResultsTask() {
-        description = 'Gets the Veracode scan results based on the build id passed in'
+    VeracodeDetailedReportTask() {
+        description = 'Gets the Veracode Scan Detailed Report based on the given build_id'
         requiredArguments << 'build_id'
     }
 
     void run() {
-        String xmlResponse = loginResults().detailedReport(project.build_id)
-        writeXml('build/scan-results.xml', xmlResponse)
+        String results = resultsAPI().detailedReport(project.build_id)
+        String file = "build/detailed-report-${project.build_id}.xml"
+        writeXml(file, results)
     }
 }

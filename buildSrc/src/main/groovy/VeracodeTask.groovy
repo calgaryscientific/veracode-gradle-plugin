@@ -105,7 +105,7 @@ abstract class VeracodeTask extends DefaultTask {
         return api
     }
 
-    protected ResultsAPIWrapper loginResults() {
+    protected ResultsAPIWrapper resultsAPI() {
         ResultsAPIWrapper api = new ResultsAPIWrapper()
         if (veracodeUser.apiCredentials) {
             api.setUpApiCredentials(veracodeUser.id, veracodeUser.key)

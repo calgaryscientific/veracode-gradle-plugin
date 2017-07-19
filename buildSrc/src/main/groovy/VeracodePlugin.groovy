@@ -26,6 +26,7 @@
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 
 class VeracodePlugin implements Plugin<Project> {
     void apply(Project project) {
@@ -43,7 +44,7 @@ class VeracodePlugin implements Plugin<Project> {
         project.task(VeracodeBeginPreScanTask.NAME, type: VeracodeBeginPreScanTask)
         project.task(VeracodeGetPreScanResultsTask.NAME, type: VeracodeGetPreScanResultsTask)
         project.task(VeracodeBeginScanTask.NAME, type: VeracodeBeginScanTask)
-        def veracodeScanResultsTask = project.task(VeracodeScanResultsTask.NAME, type: VeracodeScanResultsTask)
+        Task veracodeScanResultsTask = project.task(VeracodeDetailedReportTask.NAME, type: VeracodeDetailedReportTask)
         project.task(VeracodeScanResultsInCsvTask.NAME, type: VeracodeScanResultsInCsvTask, dependsOn: veracodeScanResultsTask)
         project.task(VeracodeRemoveFileTask.NAME, type: VeracodeRemoveFileTask)
         project.task(ReportFlawsByTeamTask.NAME, type: ReportFlawsByTeamTask)
