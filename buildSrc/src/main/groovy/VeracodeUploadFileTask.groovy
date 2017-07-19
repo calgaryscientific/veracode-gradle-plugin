@@ -31,7 +31,7 @@ class VeracodeUploadFileTask extends VeracodeTask {
     static final String NAME = 'veracodeUploadFile'
 
     VeracodeUploadFileTask() {
-        description = "Uploads all files from 'build/to-upload' folder to Veracode based on the application id provided"
+        description = "Uploads all files from 'build/to-upload' folder to Veracode based on the given app_id"
         requiredArguments << 'app_id' << "maxUploadAttempts${VeracodeTask.OPTIONAL}"
     }
 
