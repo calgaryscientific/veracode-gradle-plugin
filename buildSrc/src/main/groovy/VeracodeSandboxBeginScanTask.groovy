@@ -31,6 +31,7 @@ class VeracodeSandboxBeginScanTask extends VeracodeTask {
         group = 'Veracode Sandbox'
         description = 'Starts a Veracode scan for given application ID and sanbox ID'
         requiredArguments << 'app_id' << 'sandbox_id'
+        dependsOn "veracodeSandboxGetPreScanResults"
     }
 
     void run() {

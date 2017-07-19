@@ -30,6 +30,7 @@ class VeracodeBeginScanTask extends VeracodeTask {
     VeracodeBeginScanTask() {
         description = 'Starts a Veracode scan for given application ID'
         requiredArguments << 'app_id'
+        dependsOn "veracodeGetPreScanResults"
     }
 
     void run() {
