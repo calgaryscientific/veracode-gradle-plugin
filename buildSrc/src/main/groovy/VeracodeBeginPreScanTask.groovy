@@ -24,16 +24,21 @@
  * SOFTWARE.
  ******************************************************************************/
 
-class VeracodePreScanTask extends VeracodeTask {
-    static final String NAME = 'veracodePreScan'
+class VeracodeBeginPreScanTask extends VeracodeTask {
+    static final String NAME = 'veracodeBeginPreScan'
 
-    VeracodePreScanTask() {
-        description = 'Start Veracode pre-scan for the application id passed in'
+    VeracodeBeginPreScanTask() {
+        description = 'Begin Veracode pre-scan for the given application ID'
         requiredArguments << 'app_id'
     }
 
     void run() {
-        writeXml('build/pre-scan.xml', loginUpdate().beginPreScan(project.app_id))
-        println 'Check build/pre-scan.xml for response status.'
+        String file = 'build/begin-pre-scan.xml'
+        Node xml = writeXml(
+                file,
+                loginUpdate().beginPreScan(project.app_id)
+        )
+        printf "app_id=%-10s build_id=%-10s version=\"%s\" status=\"%s\"\n",
+                xml.@app_id, xml.@build_id, xml.build.@version, xml.build.analysis_unit.@status
     }
 }
