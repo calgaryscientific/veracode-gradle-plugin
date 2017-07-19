@@ -24,11 +24,11 @@
  * SOFTWARE.
  ******************************************************************************/
 
-class VeracodeFileListTask extends VeracodeTask {
-    static final String NAME = 'veracodeFileList'
+class VeracodeGetFileListTask extends VeracodeTask {
+    static final String NAME = 'veracodeGetFileList'
 
-    VeracodeFileListTask() {
-        description = "Lists all files under the latest build for the application id passed in. If a build id is provided, the files under that build will be listed instead"
+    VeracodeGetFileListTask() {
+        description = "Lists all files for the given app_id and build_id combination. If no build_id is provided, it will use the latest one"
         requiredArguments << 'app_id' << "build_id${VeracodeTask.OPTIONAL}"
     }
 
