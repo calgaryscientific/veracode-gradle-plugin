@@ -1,11 +1,4 @@
 .gradle
 gradle.properties
 build
-.idea
-*.iml
-.svn
-
-# prevent accidental commit of local library/docs
-docs
 buildSrc/lib
-src/apps

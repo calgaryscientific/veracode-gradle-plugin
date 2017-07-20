@@ -24,30 +24,38 @@
  * SOFTWARE.
  ******************************************************************************/
 
-class VeracodeCreateBuildTask extends VeracodeTask {
-    static final String NAME = 'veracodeCreateBuild'
+class VeracodeSandboxGetBuildInfoTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxGetBuildInfo'
 
-    VeracodeCreateBuildTask() {
-        description = 'Creates a new build for the given application ID, using build_version as the identifier'
-        requiredArguments << 'app_id' << 'build_version'
+    VeracodeSandboxGetBuildInfoTask() {
+        group = 'Veracode Sandbox'
+        description = "Lists build information for the given applicaiton ID and sandbox ID. If no build ID is provided, the latest will be used"
+        requiredArguments << 'app_id' << 'sandbox_id' << "build_id${VeracodeTask.OPTIONAL}"
     }
 
     void run() {
-        String file = 'build/create-build-list.xml'
-        Node buildInfo = writeXml(
-                file,
-                uploadAPI().createBuild(project.app_id, project.build_version)
-        )
-        if (buildInfo.name().equals('error')) {
-            fail("ERROR: ${buildInfo.text()}\nSee ${file} for details!")
+        String response
+        String file
+        if (project.hasProperty('build_id')) {
+            response = uploadAPI().getBuildInfo(project.app_id, project.build_id, project.sandbox_id)
+            file = "build/sandbox-build-info-${project.build_id}.xml"
         } else {
-            println '[Build]'
-            buildInfo.build[0].attributes().each() { k, v ->
-                println "\t$k=$v"
+            response = uploadAPI().getBuildInfo(project.app_id, "", project.sandbox_id)
+            file = 'build/sandbox-build-info-latest.xml'
+        }
+        Node buildInfo = writeXml(file, response)
+        printf "app_id=%s\n", buildInfo.@app_id
+        printf "sandbox_id=%s\n", buildInfo.@sandbox_id
+        buildInfo.each() { build ->
+            println "[build]"
+            build.attributes().each() { k, v ->
+                println "$k=$v"
             }
-            println '[Analysis Unit]'
-            buildInfo.build[0].children()[0].attributes().each { k, v ->
-                println "\t$k=$v"
+            build.children().each { child ->
+                println "\t[analysis_unit]"
+                child.attributes().each() { k, v ->
+                    println "\t$k=$v"
+                }
             }
         }
     }

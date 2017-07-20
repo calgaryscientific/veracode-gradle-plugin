@@ -24,15 +24,16 @@
  * SOFTWARE.
  ******************************************************************************/
 
-class VeracodeDeleteBuildTask extends VeracodeTask {
-    static final String NAME = 'veracodeDeleteBuild'
+class VeracodeSandboxDeleteBuildTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxDeleteBuild'
 
-    VeracodeDeleteBuildTask() {
+    VeracodeSandboxDeleteBuildTask() {
+        group = 'Veracode Sandbox'
         description = 'Deletes the most recent build, even those that have their scan completed!'
-        requiredArguments << 'app_id'
+        requiredArguments << 'app_id' << 'sandbox_id'
     }
 
     void run() {
-        writeXml('build/delete-build.xml', uploadAPI().deleteBuild(project.app_id))
+        writeXml('build/sandbox-delete-build.xml', uploadAPI().deleteBuild(project.app_id, project.sandbox_id))
     }
 }

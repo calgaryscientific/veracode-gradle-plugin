@@ -24,15 +24,28 @@
  * SOFTWARE.
  ******************************************************************************/
 
-class VeracodeDeleteBuildTask extends VeracodeTask {
-    static final String NAME = 'veracodeDeleteBuild'
+class VeracodeGetPreScanResultsTask extends VeracodeTask {
+    static final String NAME = 'veracodeGetPreScanResults'
 
-    VeracodeDeleteBuildTask() {
-        description = 'Deletes the most recent build, even those that have their scan completed!'
-        requiredArguments << 'app_id'
+    VeracodeGetPreScanResultsTask() {
+        description = 'Gets the pre-scan results for the given application ID'
+        requiredArguments << 'app_id' << "build_id${OPTIONAL}"
     }
 
     void run() {
-        writeXml('build/delete-build.xml', uploadAPI().deleteBuild(project.app_id))
+        String response
+        String file
+        if (project.hasProperty('build_id')) {
+            response = uploadAPI().getPreScanResults(project.app_id, project.build_id)
+            file = "build/pre-scan-results-${project.build_id}.xml"
+        } else {
+            response = uploadAPI().getPreScanResults(project.app_id)
+            file = 'build/pre-scan-results-latest.xml'
+        }
+        Node xml = writeXml(file, response)
+        xml.each() { node ->
+            printf "app_id=%-10s build_id=%-10s id=%-10s name=\"%s\" status=\"%s\"\n",
+                    xml.@app_id, xml.@build_id, node.@id, node.@name, node.@status
+        }
     }
 }

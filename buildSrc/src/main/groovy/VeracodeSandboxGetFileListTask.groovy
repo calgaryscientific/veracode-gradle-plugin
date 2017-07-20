@@ -24,15 +24,26 @@
  * SOFTWARE.
  ******************************************************************************/
 
-class VeracodeDeleteBuildTask extends VeracodeTask {
-    static final String NAME = 'veracodeDeleteBuild'
+class VeracodeSandboxGetFileListTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxGetFileList'
 
-    VeracodeDeleteBuildTask() {
-        description = 'Deletes the most recent build, even those that have their scan completed!'
-        requiredArguments << 'app_id'
+    VeracodeSandboxGetFileListTask() {
+        description = "Lists all files for the given app_id, sandbox_id and build_id combination. If no build_id is provided, it will use the latest one"
+        requiredArguments << 'app_id' << 'sandbox_id' << "build_id${VeracodeTask.OPTIONAL}"
     }
 
     void run() {
-        writeXml('build/delete-build.xml', uploadAPI().deleteBuild(project.app_id))
+        String xmlResponse
+        if (project.hasProperty('build_id')) {
+            xmlResponse = uploadAPI().getFileList(project.app_id, project.build_id, project.sandbox_id)
+        } else {
+            xmlResponse = uploadAPI().getFileList(project.app_id, "", project.sandbox_id)
+        }
+        Node filelist = writeXml('build/sandbox-file-list.xml', xmlResponse)
+        filelist.each() { file ->
+            println "${file.@file_name}=${file.@file_status}"
+        }
+        println ''
+        println 'Total files = ' + filelist.children().size()
     }
 }

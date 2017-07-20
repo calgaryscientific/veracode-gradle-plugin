@@ -24,15 +24,37 @@
  * SOFTWARE.
  ******************************************************************************/
 
-class VeracodeDeleteBuildTask extends VeracodeTask {
-    static final String NAME = 'veracodeDeleteBuild'
+class VeracodeGetBuildInfoTask extends VeracodeTask {
+    static final String NAME = 'veracodeGetBuildInfo'
 
-    VeracodeDeleteBuildTask() {
-        description = 'Deletes the most recent build, even those that have their scan completed!'
-        requiredArguments << 'app_id'
+    VeracodeGetBuildInfoTask() {
+        description = "Lists build information for the given applicaiton ID. If no build ID is provided, the latest will be used"
+        requiredArguments << 'app_id' << "build_id${VeracodeTask.OPTIONAL}"
     }
 
     void run() {
-        writeXml('build/delete-build.xml', uploadAPI().deleteBuild(project.app_id))
+        String response
+        String file
+        if (project.hasProperty('build_id')) {
+            response = uploadAPI().getBuildInfo(project.app_id, project.build_id)
+            file = "build/build-info-${project.build_id}.xml"
+        } else {
+            response = uploadAPI().getBuildInfo(project.app_id)
+            file = 'build/build-info-latest.xml'
+        }
+        Node buildInfo = writeXml(file, response)
+        printf "app_id=%s\n", buildInfo.@app_id
+        buildInfo.each() { build ->
+            println "[build]"
+            build.attributes().each() { k, v ->
+                println "$k=$v"
+            }
+            build.children().each { child ->
+                println "\t[analysis_unit]"
+                child.attributes().each() { k, v ->
+                    println "\t$k=$v"
+                }
+            }
+        }
     }
 }
