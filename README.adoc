@@ -1,7 +1,7 @@
-= vt
+= veracode-gradle-plugin
 :toc:
 
-Veracode Tools (vt) is a Gradle project that aims to ease the effort required to work with Veracode application security scanning activities.
+Veracode Gradle Plugin that automates Veracode application security scanning activities.
 
 As a set of Gradle tasks, it is meant to be usable either as a command line submission tool or integrated as part of a continuous integration build process.
 
@@ -9,10 +9,6 @@ It helps perform the following tasks:
 
 * Perform Veracode submissions for applications.
 * Scan results for flaws.
-
-Roadmap:
-
-* Perform flaws triage.
 
 == Pre-Requisites
 
@@ -25,7 +21,8 @@ The https://tools.veracode.com/integrations/API-Wrappers/Java/bin/VeracodeJavaAP
 
 * Clone project.
 * Copy the `VeracodeJavaAPI.jar` (from Veracode) to a newly created `buildSrc/lib` directory.
-* Rename `sample-gradle.properties` to `gradle.properties` and edit its contents to setup Veracode credentials.
+* Rename the `sample-gradle.properties` file to `gradle.properties` and edit its contents to setup Veracode credentials.
+Optionally, the Veracode credentials properties can be placed in the `~/.gradle/gradle.properties` file.
 * Execute `gradle tasks` to see available tasks.
 * Execute `gradle veracodeGetAppList` to see available applications and their `app_id`.
 

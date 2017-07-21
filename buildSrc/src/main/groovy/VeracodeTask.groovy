@@ -50,7 +50,7 @@ abstract class VeracodeTask extends DefaultTask {
     ]
 
     def requiredArguments = []
-    VeracodeUser veracodeUser
+    VeracodeCredentials veracodeCredentials
 
     VeracodeTask() {
         group = 'Veracode'
@@ -97,20 +97,20 @@ abstract class VeracodeTask extends DefaultTask {
 
     protected UploadAPIWrapper uploadAPI() {
         UploadAPIWrapper api = new UploadAPIWrapper()
-        if (veracodeUser.apiCredentials) {
-            api.setUpApiCredentials(veracodeUser.id, veracodeUser.key)
+        if (veracodeCredentials.apiCredentials) {
+            api.setUpApiCredentials(veracodeCredentials.id, veracodeCredentials.key)
         } else {
-            api.setUpCredentials(veracodeUser.username, veracodeUser.password)
+            api.setUpCredentials(veracodeCredentials.username, veracodeCredentials.password)
         }
         return api
     }
 
     protected ResultsAPIWrapper resultsAPI() {
         ResultsAPIWrapper api = new ResultsAPIWrapper()
-        if (veracodeUser.apiCredentials) {
-            api.setUpApiCredentials(veracodeUser.id, veracodeUser.key)
+        if (veracodeCredentials.apiCredentials) {
+            api.setUpApiCredentials(veracodeCredentials.id, veracodeCredentials.key)
         } else {
-            api.setUpCredentials(veracodeUser.username, veracodeUser.password)
+            api.setUpCredentials(veracodeCredentials.username, veracodeCredentials.password)
         }
         return api
     }
@@ -143,7 +143,7 @@ abstract class VeracodeTask extends DefaultTask {
         throw new GradleException(msg)
     }
 
-    static class VeracodeUser {
+    static class VeracodeCredentials {
         boolean apiCredentials
         String username
         String password

@@ -30,7 +30,7 @@ import org.gradle.api.Task
 
 class VeracodePlugin implements Plugin<Project> {
     void apply(Project project) {
-        project.extensions.create('veracodeUser', VeracodeTask.VeracodeUser)
+        project.extensions.create('veracodeCredentials', VeracodeTask.VeracodeCredentials)
 
         // App tasks
         project.task(VeracodeGetAppListTask.NAME, type: VeracodeGetAppListTask)
@@ -64,7 +64,7 @@ class VeracodePlugin implements Plugin<Project> {
 
         // Setup tasks authentication
         project.configure(project.getTasks()) {
-            it.veracodeUser = project.veracodeUser
+            it.veracodeCredentials = project.veracodeCredentials
         }
 
     }

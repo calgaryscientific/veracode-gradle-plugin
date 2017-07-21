@@ -25,7 +25,7 @@
  ******************************************************************************/
 apply plugin: VeracodePlugin
 
-veracodeUser {
+veracodeCredentials {
     apiCredentials = "$veracodeUseAPICredentials"
     username = "$veracodeUsername"
     password = "$veracodePassword"
