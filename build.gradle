@@ -26,7 +26,7 @@
 apply plugin: VeracodePlugin
 
 veracodeCredentials {
-    apiCredentials = "$veracodeUseAPICredentials"
+    apiCredentials = "$veracodeUseAPICredentials".toBoolean()
     username = "$veracodeUsername"
     password = "$veracodePassword"
     id = "$veracodeID"
