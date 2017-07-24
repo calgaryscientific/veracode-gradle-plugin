@@ -23,21 +23,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-apply plugin: 'groovy'
-apply plugin: 'maven'
 
-dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile fileTree(dir: 'lib', include: '*.jar')
-}
+package com.calgaryscientific.gradle
 
-group = 'com.calgaryscientific.gradle'
-version = '1.0-SNAPSHOT'
-sourceCompatibility = 1.7
-
-uploadArchives {
-    repositories {
-        mavenLocal()
-    }
+class VeracodeCredentials {
+    boolean apiCredentials
+    String username
+    String password
+    String id
+    String key
 }

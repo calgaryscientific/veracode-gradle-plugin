@@ -23,21 +23,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-apply plugin: 'groovy'
-apply plugin: 'maven'
 
-dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile fileTree(dir: 'lib', include: '*.jar')
-}
+package com.calgaryscientific.gradle
 
-group = 'com.calgaryscientific.gradle'
-version = '1.0-SNAPSHOT'
-sourceCompatibility = 1.7
+class VeracodeDetailedReportPDFTask extends VeracodeTask {
+    static final String NAME = 'veracodeDetailedReportPDF'
 
-uploadArchives {
-    repositories {
-        mavenLocal()
+    VeracodeDetailedReportPDFTask() {
+        description = 'Gets the Veracode Scan Detailed Report PDF based on the given build_id'
+        requiredArguments << 'build_id'
+    }
+
+    void run() {
+        String file = "build/detailed-report-${project.build_id}.pdf"
+        new File(file).bytes = resultsAPI().detailedReportPdf(project.build_id)
+        printf "report file: %s\n", file
     }
 }

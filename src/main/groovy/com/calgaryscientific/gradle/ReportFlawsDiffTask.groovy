@@ -23,21 +23,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-apply plugin: 'groovy'
-apply plugin: 'maven'
 
-dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile fileTree(dir: 'lib', include: '*.jar')
-}
+package com.calgaryscientific.gradle
 
-group = 'com.calgaryscientific.gradle'
-version = '1.0-SNAPSHOT'
-sourceCompatibility = 1.7
+class ReportFlawsDiffTask extends VeracodeTask {
+    static final String NAME = 'reportFlawsDiff'
 
-uploadArchives {
-    repositories {
-        mavenLocal()
+    ReportFlawsDiffTask() {
+        description = 'Compares veracode report for two builds'
+        requiredArguments << 'build_id1' << 'build_id2'
+    }
+
+    void run() {
+        println 'Can you help to implement this? Basically, performing veracodeScanResults on two build_ids and report on:'
+        println '  - Flaws in build1 only.'
+        println '  - Flaws in build2 only.'
+        println '  - Flaws where status changed from build1 to build2.'
+        println '  - Think what else useful to know how to follow up.'
+        println '  - Format should be in ... probably csv (not sure).'
     }
 }

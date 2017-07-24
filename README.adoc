@@ -3,8 +3,6 @@
 
 Veracode Gradle Plugin that automates Veracode application security scanning activities.
 
-As a set of Gradle tasks, it is meant to be usable either as a command line submission tool or integrated as part of a continuous integration build process.
-
 It helps perform the following tasks:
 
 * Perform Veracode submissions for applications.
@@ -19,11 +17,67 @@ The https://tools.veracode.com/integrations/API-Wrappers/Java/bin/VeracodeJavaAP
 
 == Getting Started
 
-* Clone project.
-* Copy the `VeracodeJavaAPI.jar` (from Veracode) to a newly created `buildSrc/lib` directory.
-* Rename the `sample-gradle.properties` file to `gradle.properties` and edit its contents to setup Veracode credentials.
-Optionally, the Veracode credentials properties can be placed in the `~/.gradle/gradle.properties` file.
+=== Build the plugin
+
+* Clone project:
+
+----
+git clone https://github.com/calgaryscientific/veracode-gradle-plugin
+cd veracode-gradle-plugin
+mkdir lib
+----
+
+* Copy the `VeracodeJavaAPI.jar` (from Veracode) to the newly created `lib` directory.
+
+* Run `gradle uploadArchives` to build the plugin and publish it to `mavenLocal()`.
+
+=== Use the plugin
+
+* Add the following properties to the project’s `gradle.properties` and edit its contents to setup Veracode credentials.
++
+.Required gradle.properties
+----
+veracodeUseAPICredentials=false
+veracodeUsername=xxx
+veracodePassword=xxx
+veracodeID=xxx
+veracodeKey=xxx
+----
++
+NOTE: Optionally, the Veracode credentials properties can be placed in the `~/.gradle/gradle.properties` file.
++
+NOTE: There is a sample `gradle.properties` file that can be used as a base: `sample-gradle.properties`.
+
+* Add the contents of the `sample-build.gradle` file to the project’s `build.gradle` file:
++
+----
+apply plugin: 'groovy'
+
+buildscript {
+    apply plugin: 'groovy'
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath files('./lib/VeracodeJavaAPI.jar')
+        classpath 'com.calgaryscientific.gradle:veracodePlugin:1.0-SNAPSHOT'
+    }
+}
+apply plugin: 'com.calgaryscientific.gradle'
+
+veracodeCredentials {
+    apiCredentials = "$veracodeUseAPICredentials".toBoolean()
+    username = "$veracodeUsername"
+    password = "$veracodePassword"
+    id = "$veracodeID"
+    key = "$veracodeKey"
+}
+----
+
+* Copy the `VeracodeJavaAPI.jar` (from Veracode) to a newly created `lib` directory.
+
 * Execute `gradle tasks` to see available tasks.
+
 * Execute `gradle veracodeGetAppList` to see available applications and their `app_id`.
 
 === Veracode App ID

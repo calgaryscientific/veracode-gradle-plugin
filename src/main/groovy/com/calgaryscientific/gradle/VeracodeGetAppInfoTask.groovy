@@ -23,21 +23,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-apply plugin: 'groovy'
-apply plugin: 'maven'
 
-dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile fileTree(dir: 'lib', include: '*.jar')
-}
+package com.calgaryscientific.gradle
 
-group = 'com.calgaryscientific.gradle'
-version = '1.0-SNAPSHOT'
-sourceCompatibility = 1.7
+class VeracodeGetAppInfoTask extends VeracodeTask {
+    static final String NAME = 'veracodeGetAppInfo'
 
-uploadArchives {
-    repositories {
-        mavenLocal()
+    VeracodeGetAppInfoTask() {
+        description = 'List application information for the given application ID'
+        requiredArguments << 'app_id'
+    }
+
+    void run() {
+        writeXml(
+                'build/app-info.xml', uploadAPI().getAppInfo(project.app_id)
+        ).application[0].attributes().each() { k, v ->
+            println "$k=$v"
+        }
     }
 }

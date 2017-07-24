@@ -23,21 +23,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-apply plugin: 'groovy'
-apply plugin: 'maven'
 
-dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile fileTree(dir: 'lib', include: '*.jar')
-}
+package com.calgaryscientific.gradle
 
-group = 'com.calgaryscientific.gradle'
-version = '1.0-SNAPSHOT'
-sourceCompatibility = 1.7
+class VeracodeBeginPreScanTask extends VeracodeTask {
+    static final String NAME = 'veracodeBeginPreScan'
 
-uploadArchives {
-    repositories {
-        mavenLocal()
+    VeracodeBeginPreScanTask() {
+        description = 'Begin Veracode pre-scan for the given application ID'
+        requiredArguments << 'app_id'
+    }
+
+    void run() {
+        String file = 'build/begin-pre-scan.xml'
+        Node xml = writeXml(
+                file,
+                uploadAPI().beginPreScan(project.app_id)
+        )
+        printf "app_id=%-10s build_id=%-10s version=\"%s\" status=\"%s\"\n",
+                xml.@app_id, xml.@build_id, xml.build.@version, xml.build.analysis_unit.@status
     }
 }

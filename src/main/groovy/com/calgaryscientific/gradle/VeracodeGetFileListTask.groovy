@@ -23,21 +23,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-apply plugin: 'groovy'
-apply plugin: 'maven'
 
-dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile fileTree(dir: 'lib', include: '*.jar')
-}
+package com.calgaryscientific.gradle
 
-group = 'com.calgaryscientific.gradle'
-version = '1.0-SNAPSHOT'
-sourceCompatibility = 1.7
+class VeracodeGetFileListTask extends VeracodeTask {
+    static final String NAME = 'veracodeGetFileList'
 
-uploadArchives {
-    repositories {
-        mavenLocal()
+    VeracodeGetFileListTask() {
+        description = "Lists all files for the given app_id and build_id combination. If no build_id is provided, it will use the latest one"
+        requiredArguments << 'app_id' << "build_id${VeracodeTask.OPTIONAL}"
+    }
+
+    void run() {
+        String xmlResponse
+        if (project.hasProperty('build_id')) {
+            xmlResponse = uploadAPI().getFileList(project.app_id, project.build_id)
+        } else {
+            xmlResponse = uploadAPI().getFileList(project.app_id)
+        }
+        Node filelist = writeXml('build/file-list.xml', xmlResponse)
+        filelist.each() { file ->
+            println "${file.@file_name}=${file.@file_status}"
+        }
+        println ''
+        println 'Total files = ' + filelist.children().size()
     }
 }

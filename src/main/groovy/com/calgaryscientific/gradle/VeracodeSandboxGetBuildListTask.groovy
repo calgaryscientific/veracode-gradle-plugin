@@ -23,21 +23,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-apply plugin: 'groovy'
-apply plugin: 'maven'
 
-dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile fileTree(dir: 'lib', include: '*.jar')
-}
+package com.calgaryscientific.gradle
 
-group = 'com.calgaryscientific.gradle'
-version = '1.0-SNAPSHOT'
-sourceCompatibility = 1.7
+class VeracodeSandboxGetBuildListTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxGetBuildList'
 
-uploadArchives {
-    repositories {
-        mavenLocal()
+    VeracodeSandboxGetBuildListTask() {
+        group = 'Veracode Sandbox'
+        description = 'List builds for the given aplication ID and sandbox ID'
+        requiredArguments << 'app_id' << 'sandbox_id'
+    }
+
+    void run() {
+        String file = 'build/sandbox-build-list.xml'
+        Node xml = writeXml(
+                file,
+                uploadAPI().getBuildList(project.app_id, project.sandbox_id)
+        )
+        xml.each() { build ->
+            printf "app_id=%-10s sandbox_id=%-10s build_id=%-10s version=\"%s\"\n",
+                    xml.@app_id, xml.@sandbox_id, build.@build_id, build.@version
+        }
     }
 }

@@ -23,21 +23,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-apply plugin: 'groovy'
-apply plugin: 'maven'
 
-dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile fileTree(dir: 'lib', include: '*.jar')
-}
+package com.calgaryscientific.gradle
 
-group = 'com.calgaryscientific.gradle'
-version = '1.0-SNAPSHOT'
-sourceCompatibility = 1.7
+class VeracodeGetBuildInfoTask extends VeracodeTask {
+    static final String NAME = 'veracodeGetBuildInfo'
 
-uploadArchives {
-    repositories {
-        mavenLocal()
+    VeracodeGetBuildInfoTask() {
+        description = "Lists build information for the given applicaiton ID. If no build ID is provided, the latest will be used"
+        requiredArguments << 'app_id' << "build_id${VeracodeTask.OPTIONAL}"
+    }
+
+    void run() {
+        String response
+        String file
+        if (project.hasProperty('build_id')) {
+            response = uploadAPI().getBuildInfo(project.app_id, project.build_id)
+            file = "build/build-info-${project.build_id}.xml"
+        } else {
+            response = uploadAPI().getBuildInfo(project.app_id)
+            file = 'build/build-info-latest.xml'
+        }
+        Node buildInfo = writeXml(file, response)
+        printf "app_id=%s\n", buildInfo.@app_id
+        buildInfo.each() { build ->
+            println "[build]"
+            build.attributes().each() { k, v ->
+                println "$k=$v"
+            }
+            build.children().each { child ->
+                println "\t[analysis_unit]"
+                child.attributes().each() { k, v ->
+                    println "\t$k=$v"
+                }
+            }
+        }
     }
 }

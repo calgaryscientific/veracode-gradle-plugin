@@ -23,21 +23,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-apply plugin: 'groovy'
-apply plugin: 'maven'
 
-dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile fileTree(dir: 'lib', include: '*.jar')
-}
+package com.calgaryscientific.gradle
 
-group = 'com.calgaryscientific.gradle'
-version = '1.0-SNAPSHOT'
-sourceCompatibility = 1.7
+class VeracodeGetBuildListTask extends VeracodeTask {
+    static final String NAME = 'veracodeGetBuildList'
 
-uploadArchives {
-    repositories {
-        mavenLocal()
+    VeracodeGetBuildListTask() {
+        description = 'List builds for the given aplication ID'
+        requiredArguments << 'app_id'
+    }
+
+    void run() {
+        String file = 'build/build-list.xml'
+        Node xml = writeXml(
+                file,
+                uploadAPI().getBuildList(project.app_id)
+        )
+        xml.each() { build ->
+            printf "app_id=%-10s build_id=%-10s version=\"%s\"\n",
+                    xml.@app_id, build.@build_id, build.@version
+        }
     }
 }

@@ -23,21 +23,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-apply plugin: 'groovy'
-apply plugin: 'maven'
 
-dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile fileTree(dir: 'lib', include: '*.jar')
-}
+package com.calgaryscientific.gradle
 
-group = 'com.calgaryscientific.gradle'
-version = '1.0-SNAPSHOT'
-sourceCompatibility = 1.7
+class VeracodeRemoveFileTask extends VeracodeTask {
+    static final String NAME = 'veracodeRemoveFile'
 
-uploadArchives {
-    repositories {
-        mavenLocal()
+    VeracodeRemoveFileTask() {
+        description = 'Remove file based on the file id for the application id passed in'
+        requiredArguments << 'app_id' << 'fileId'
+    }
+
+    void run() {
+        writeXml('build/remove-file.xml', uploadAPI().removeFile(project.app_id, project.fileId))
     }
 }

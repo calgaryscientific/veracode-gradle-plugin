@@ -23,21 +23,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-apply plugin: 'groovy'
-apply plugin: 'maven'
 
-dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile fileTree(dir: 'lib', include: '*.jar')
-}
+package com.calgaryscientific.gradle
 
-group = 'com.calgaryscientific.gradle'
-version = '1.0-SNAPSHOT'
-sourceCompatibility = 1.7
+class VeracodeCreateBuildTask extends VeracodeTask {
+    static final String NAME = 'veracodeCreateBuild'
 
-uploadArchives {
-    repositories {
-        mavenLocal()
+    VeracodeCreateBuildTask() {
+        description = 'Creates a new build for the given application ID, using build_version as the identifier'
+        requiredArguments << 'app_id' << 'build_version'
+    }
+
+    void run() {
+        String file = 'build/create-build-list.xml'
+        Node buildInfo = writeXml(
+                file,
+                uploadAPI().createBuild(project.app_id, project.build_version)
+        )
+        if (buildInfo.name().equals('error')) {
+            fail("ERROR: ${buildInfo.text()}\nSee ${file} for details!")
+        } else {
+            println '[Build]'
+            buildInfo.build[0].attributes().each() { k, v ->
+                println "\t$k=$v"
+            }
+            println '[Analysis Unit]'
+            buildInfo.build[0].children()[0].attributes().each { k, v ->
+                println "\t$k=$v"
+            }
+        }
     }
 }

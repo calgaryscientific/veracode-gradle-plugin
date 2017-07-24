@@ -23,21 +23,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-apply plugin: 'groovy'
-apply plugin: 'maven'
 
-dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile fileTree(dir: 'lib', include: '*.jar')
-}
+package com.calgaryscientific.gradle
 
-group = 'com.calgaryscientific.gradle'
-version = '1.0-SNAPSHOT'
-sourceCompatibility = 1.7
+class VeracodeSandboxDeleteBuildTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxDeleteBuild'
 
-uploadArchives {
-    repositories {
-        mavenLocal()
+    VeracodeSandboxDeleteBuildTask() {
+        group = 'Veracode Sandbox'
+        description = 'Deletes the most recent build, even those that have their scan completed!'
+        requiredArguments << 'app_id' << 'sandbox_id'
+    }
+
+    void run() {
+        writeXml('build/sandbox-delete-build.xml', uploadAPI().deleteBuild(project.app_id, project.sandbox_id))
     }
 }

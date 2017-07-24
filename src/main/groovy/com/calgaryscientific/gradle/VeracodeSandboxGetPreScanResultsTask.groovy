@@ -23,21 +23,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-apply plugin: 'groovy'
-apply plugin: 'maven'
 
-dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile fileTree(dir: 'lib', include: '*.jar')
-}
+package com.calgaryscientific.gradle
 
-group = 'com.calgaryscientific.gradle'
-version = '1.0-SNAPSHOT'
-sourceCompatibility = 1.7
+class VeracodeSandboxGetPreScanResultsTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxGetPreScanResults'
 
-uploadArchives {
-    repositories {
-        mavenLocal()
+    VeracodeSandboxGetPreScanResultsTask() {
+        group = 'Veracode Sandbox'
+        description = 'Gets the pre-scan results for the given application ID and sandbox ID'
+        requiredArguments << 'app_id' << 'sandbox_id' << "build_id${OPTIONAL}"
+    }
+
+    void run() {
+        String response
+        String file
+        if (project.hasProperty('build_id')) {
+            response = uploadAPI().getPreScanResults(project.app_id, project.build_id, project.sandbox_id)
+            file = "build/sandbox-pre-scan-results-${project.build_id}.xml"
+        } else {
+            response = uploadAPI().getPreScanResults(project.app_id, "", project.sandbox_id)
+            file = 'build/sandbox-pre-scan-results-latest.xml'
+        }
+        Node xml = writeXml(file, response)
+        xml.each() { node ->
+            printf "app_id=%-10s sandbox_id=%-10s build_id=%-10s id=%-10s name=\"%s\" status=\"%s\"\n",
+                    xml.@app_id, xml.@sandbox_id, xml.@build_id, node.@id, node.@name, node.@status
+        }
     }
 }

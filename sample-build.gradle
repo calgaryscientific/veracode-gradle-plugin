@@ -1,0 +1,21 @@
+apply plugin: 'groovy'
+
+buildscript {
+    apply plugin: 'groovy'
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath files('./lib/VeracodeJavaAPI.jar')
+        classpath 'com.calgaryscientific.gradle:veracodePlugin:1.0-SNAPSHOT'
+    }
+}
+apply plugin: 'com.calgaryscientific.gradle'
+
+veracodeCredentials {
+    apiCredentials = "$veracodeUseAPICredentials".toBoolean()
+    username = "$veracodeUsername"
+    password = "$veracodePassword"
+    id = "$veracodeID"
+    key = "$veracodeKey"
+}
