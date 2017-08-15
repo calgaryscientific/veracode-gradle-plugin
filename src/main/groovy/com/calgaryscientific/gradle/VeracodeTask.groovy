@@ -27,7 +27,6 @@
 package com.calgaryscientific.gradle
 
 import org.gradle.api.DefaultTask
-import org.gradle.api.Project
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 import org.gradle.util.GFileUtils
@@ -35,7 +34,6 @@ import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
 
 abstract class VeracodeTask extends DefaultTask {
-    final static String OPTIONAL = '-optional'
     final static def validArguments = [
             'app_id'           : '123',
             'sandbox_id'       : '123',
@@ -51,51 +49,39 @@ abstract class VeracodeTask extends DefaultTask {
             'build_id2'        : '123'
     ]
 
-    def requiredArguments = []
+    List<String> requiredArguments = []
+    List<String> optionalArguments = []
 
     VeracodeTask() {
         group = 'Veracode'
     }
 
-
-
     abstract void run()
 
-    final String correctUsage() {
-        StringBuilder sb = new StringBuilder("Example of usage: gradle ${getName()}")
-        requiredArguments.each() {
-            if (!isArgumentOptional(it)) {
-                sb.append(" -P${it}=${validArguments.get(it)}")
-            } else {
-                String originalArgument = it.substring(0, it.length() - OPTIONAL.length())
-                sb.append(" [-P${originalArgument}=${validArguments.get(originalArgument)}]")
-            }
-        }
+    @TaskAction
+    final def vExecute() { if (hasRequiredArguments()) run() }
 
+    // === utility methods ===
+    protected static String correctUsage(String taskName, List<String> requiredArguments, List<String> optionalArguments) {
+        StringBuilder sb = new StringBuilder("Missing required arguments: gradle ${taskName}")
+        requiredArguments.each() { arg ->
+            sb.append(" -P${arg}=${validArguments.get(arg)}")
+        }
+        optionalArguments.each() { arg ->
+            sb.append(" [-P${arg}=${validArguments.get(arg)}]")
+        }
         sb.toString()
     }
 
-    final boolean haveRequiredArguments() {
-        boolean haveRequiredArguments = true
-        requiredArguments.each() {
-            if (!isArgumentOptional(it)) {
-                haveRequiredArguments &= getProject().hasProperty(it)
-            }
+    protected boolean hasRequiredArguments() {
+        boolean hasRequiredArguments = true
+        requiredArguments.each() { arg ->
+            hasRequiredArguments &= getProject().hasProperty(arg)
         }
-
-        if (!haveRequiredArguments) {
-            println correctUsage()
+        if (!hasRequiredArguments) {
+            fail(correctUsage(this.name, this.requiredArguments, this.optionalArguments))
         }
-
-        return haveRequiredArguments
-    }
-
-    @TaskAction
-    final def vExecute() { if (haveRequiredArguments()) run() }
-
-    // === utility methods ===
-    protected boolean isArgumentOptional(String arg) {
-        arg.endsWith(OPTIONAL)
+        return hasRequiredArguments
     }
 
     protected UploadAPIWrapper uploadAPI() {

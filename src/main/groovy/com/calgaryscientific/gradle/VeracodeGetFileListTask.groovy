@@ -31,7 +31,8 @@ class VeracodeGetFileListTask extends VeracodeTask {
 
     VeracodeGetFileListTask() {
         description = "Lists all files for the given app_id and build_id combination. If no build_id is provided, it will use the latest one"
-        requiredArguments << 'app_id' << "build_id${VeracodeTask.OPTIONAL}"
+        requiredArguments << 'app_id'
+        optionalArguments << 'build_id'
     }
 
     void run() {

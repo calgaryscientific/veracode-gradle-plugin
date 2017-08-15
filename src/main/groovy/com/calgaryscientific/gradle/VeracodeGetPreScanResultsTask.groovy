@@ -31,7 +31,8 @@ class VeracodeGetPreScanResultsTask extends VeracodeTask {
 
     VeracodeGetPreScanResultsTask() {
         description = 'Gets the pre-scan results for the given application ID'
-        requiredArguments << 'app_id' << "build_id${OPTIONAL}"
+        requiredArguments << 'app_id'
+        optionalArguments << 'build_id'
     }
 
     void run() {

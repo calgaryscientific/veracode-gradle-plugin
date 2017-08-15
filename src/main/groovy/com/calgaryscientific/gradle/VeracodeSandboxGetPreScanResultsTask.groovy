@@ -32,7 +32,8 @@ class VeracodeSandboxGetPreScanResultsTask extends VeracodeTask {
     VeracodeSandboxGetPreScanResultsTask() {
         group = 'Veracode Sandbox'
         description = 'Gets the pre-scan results for the given application ID and sandbox ID'
-        requiredArguments << 'app_id' << 'sandbox_id' << "build_id${OPTIONAL}"
+        requiredArguments << 'app_id' << 'sandbox_id'
+        optionalArguments << 'build_id'
     }
 
     void run() {

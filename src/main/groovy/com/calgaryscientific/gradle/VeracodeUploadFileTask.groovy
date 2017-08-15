@@ -34,7 +34,8 @@ class VeracodeUploadFileTask extends VeracodeTask {
 
     VeracodeUploadFileTask() {
         description = "Uploads all files from 'build/to-upload' folder to Veracode based on the given app_id"
-        requiredArguments << 'app_id' << "maxUploadAttempts${VeracodeTask.OPTIONAL}"
+        requiredArguments << 'app_id'
+        optionalArguments << 'maxUploadAttempts'
     }
 
     void run() {

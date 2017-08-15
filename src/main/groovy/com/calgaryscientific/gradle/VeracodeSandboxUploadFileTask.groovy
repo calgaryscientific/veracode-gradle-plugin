@@ -35,7 +35,8 @@ class VeracodeSandboxUploadFileTask extends VeracodeTask {
     VeracodeSandboxUploadFileTask() {
         group = 'Veracode Sandbox'
         description = "Uploads all files from 'build/to-upload' folder to Veracode based on the given app_id and sandbox_id"
-        requiredArguments << 'app_id' << 'sandbox_id' << "maxUploadAttempts${VeracodeTask.OPTIONAL}"
+        requiredArguments << 'app_id' << 'sandbox_id'
+        optionalArguments << 'maxUploadAttempts'
     }
 
     void run() {
