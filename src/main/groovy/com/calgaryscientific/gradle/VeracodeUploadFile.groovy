@@ -29,43 +29,39 @@ package com.calgaryscientific.gradle
 import groovy.io.FileType
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 
-class VeracodeSandboxUploadFileTask extends VeracodeTask {
-    static final String NAME = 'veracodeSandboxUploadFile'
+abstract class VeracodeUploadFile extends VeracodeTask {
 
-    VeracodeSandboxUploadFileTask() {
-        group = 'Veracode Sandbox'
-        description = "Uploads all files from 'to-upload' folder to Veracode based on the given app_id and sandbox_id"
-        requiredArguments << 'app_id' << 'sandbox_id'
-        optionalArguments << 'maxUploadAttempts'
-    }
-
-    void run() {
-        String response = ''
-        String lastUploadXMLFile = 'sandbox-upload-file-latest.xml'
+    void upload() {
+        String xmlResponse = ''
         UploadAPIWrapper update = uploadAPI()
-        File uploadFolder = new File('to-upload')
         def error
         Integer tries = 1;
         Integer maxTries = Integer.parseInt((hasProperty('maxUploadAttempts') ? maxUploadAttempts : '10'))
 
-        while (uploadFolder.list().length > 0 && (tries <= maxTries || maxTries == 0)) {
-            println ''
-            if (tries > 1) {
-                println "Attempt ${tries}"
-            }
-            println "Maximum upload attempts = ${maxTries} (0 means keep trying)"
-            println ''
-            def fileList = []
-            uploadFolder.eachFileRecurse(FileType.FILES) { file ->
-                fileList << file
-            }
-            // upload each file in uploadFolder
-            for (File file : fileList) {
+        println ''
+        if (tries > 1) {
+            println "Attempt ${tries}"
+        }
+        println "Maximum upload attempts = ${maxTries} (0 means keep trying)"
+        println ''
+        def fileList = []
+        inputDir.eachFileRecurse(FileType.FILES) { file ->
+            fileList << file
+        }
+        // upload each file in inputDir
+        for (File file : fileList) {
+            boolean success = false
+            while (!success && (tries <= maxTries || maxTries == 0)) {
                 try {
-                    response = update.uploadFile(project.app_id, file.absolutePath, project.sandbox_id)
-                    Node xml = writeXml(lastUploadXMLFile, response)
-                    project.delete file.absolutePath
-                    println "Processed ${file.name}"
+                    println ''
+                    println "Processing ${file.name}"
+                    String response = uploadFile(update, file.absolutePath)
+                    Node filelist = writeXml(response)
+                    filelist.each() { fileEntry ->
+                        println "${fileEntry.@file_name}=${fileEntry.@file_status}"
+                    }
+//                    project.delete file.absolutePath
+                    success = true
                 } catch (Exception e) {
                     println ''
                     println e
@@ -86,3 +82,4 @@ class VeracodeSandboxUploadFileTask extends VeracodeTask {
         }
     }
 }
+

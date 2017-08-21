@@ -37,6 +37,7 @@ class VeracodeDeleteBuildTask extends VeracodeTask {
     File outputFile = new File("${project.buildDir}/veracode", 'delete-build.xml')
 
     void run() {
+        // TODO: Run clean UploadFileTask after deleting the build
         writeXml(uploadAPI().deleteBuild(project.app_id))
     }
 }
