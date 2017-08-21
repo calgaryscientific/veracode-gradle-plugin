@@ -26,16 +26,18 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeSandboxDeleteBuildTask extends VeracodeTask {
+class VeracodeDeleteBuildSandboxTask extends VeracodeTask {
     static final String NAME = 'veracodeSandboxDeleteBuild'
 
-    VeracodeSandboxDeleteBuildTask() {
+    VeracodeDeleteBuildSandboxTask() {
         group = 'Veracode Sandbox'
         description = 'Deletes the most recent build, even those that have their scan completed!'
         requiredArguments << 'app_id' << 'sandbox_id'
     }
 
+    File outputFile = new File("${project.buildDir}/veracode", 'sandbox-delete-build.xml')
+
     void run() {
-        writeXml('sandbox-delete-build.xml', uploadAPI().deleteBuild(project.app_id, project.sandbox_id))
+        writeXml(uploadAPI().deleteBuild(project.app_id, project.sandbox_id))
     }
 }
