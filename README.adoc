@@ -63,10 +63,9 @@ buildscript {
         classpath 'com.calgaryscientific.gradle:veracodePlugin:1.0-SNAPSHOT'
     }
 }
-apply plugin: 'com.calgaryscientific.gradle'
+apply plugin: 'com.calgaryscientific.gradle.veracode'
 
 veracodeCredentials {
-    apiCredentials = "$veracodeUseAPICredentials".toBoolean()
     username = "$veracodeUsername"
     password = "$veracodePassword"
     id = "$veracodeID"
@@ -107,7 +106,7 @@ This process will upload each file prepared by `generateToUpload` to Veracode's 
 Once a file has been uploaded, it will be deleted.
 If a network error occurred during upload, re-run this task to continue uploading outstanding files.
 
-* Run `veracodePreScan`: Perform a pre-scan for the current build.
+* Run `veracodeBeginPreScan`: Perform a pre-scan for the current build.
 This task will take some time depending on the number of files being processed.
 
   - Wait for pre-scan to complete with the `veracodeBuildInfo` task.
@@ -133,7 +132,7 @@ Described as Gradle tasks, a typical submission workflow might look like this:
 
 . `gradle veracodeUpload -Papp_id=20299`
 
-. `gradle veracodePreScan -Papp_id=20299`
+. `gradle veracodeBeginPreScan -Papp_id=20299`
 
 . `gradle veracodePreScanResults -Papp_id=20299`
 +
