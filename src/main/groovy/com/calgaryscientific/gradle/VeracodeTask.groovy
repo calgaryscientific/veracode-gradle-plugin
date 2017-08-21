@@ -62,7 +62,9 @@ abstract class VeracodeTask extends DefaultTask {
     final def vExecute() { if (hasRequiredArguments()) run() }
 
     // === utility methods ===
-    protected static String correctUsage(String taskName, List<String> requiredArguments, List<String> optionalArguments) {
+    protected static String correctUsage(String taskName,
+                                         List<String> requiredArguments,
+                                         List<String> optionalArguments) {
         StringBuilder sb = new StringBuilder("Missing required arguments: gradle ${taskName}")
         requiredArguments.each() { arg ->
             sb.append(" -P${arg}=${validArguments.get(arg)}")
@@ -84,9 +86,17 @@ abstract class VeracodeTask extends DefaultTask {
         return hasRequiredArguments
     }
 
+    protected boolean useAPICredentials() {
+        if (project.veracodeCredentials.username != "" &&
+                project.veracodeCredentials.password != "") {
+            return false
+        }
+        return true
+    }
+
     protected UploadAPIWrapper uploadAPI() {
         UploadAPIWrapper api = new UploadAPIWrapper()
-        if (project.veracodeCredentials.apiCredentials) {
+        if (useAPICredentials()) {
             api.setUpApiCredentials("${project.veracodeCredentials.id}", "${project.veracodeCredentials.key}")
         } else {
             api.setUpCredentials("${project.veracodeCredentials.username}", "${project.veracodeCredentials.password}")
@@ -96,7 +106,7 @@ abstract class VeracodeTask extends DefaultTask {
 
     protected ResultsAPIWrapper resultsAPI() {
         ResultsAPIWrapper api = new ResultsAPIWrapper()
-        if (project.veracodeCredentials.apiCredentials) {
+        if (useAPICredentials()) {
             api.setUpApiCredentials("${project.veracodeCredentials.id}", "${project.veracodeCredentials.key}")
         } else {
             api.setUpCredentials("${project.veracodeCredentials.username}", "${project.veracodeCredentials.password}")
@@ -105,7 +115,11 @@ abstract class VeracodeTask extends DefaultTask {
     }
 
     protected Node writeXml(String filename, String content) {
-        GFileUtils.writeFile(content, new File(filename))
+        if (project.veracodeCredentials.outputDir != null && project.veracodeCredentials.outputDir != "") {
+            GFileUtils.writeFile(content, new File(project.veracodeCredentials.outputDir, filename))
+        } else {
+            GFileUtils.writeFile(content, new File("${project.buildDir}/veracode", filename))
+        }
         Node xml = new XmlParser().parseText(content)
         if (xml.name() == 'error') {
             fail("ERROR: ${xml.text()}\nSee ${filename} for details!")

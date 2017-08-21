@@ -102,23 +102,25 @@ class VeracodeTaskTest extends Specification {
             veracodeCredentials {
                 username = 'user'
                 password = 'pass'
+                id = 'id'
+                key = 'key'
             }
             task verifyProjectVeracodeCredentials {
                 doLast {
                     assert project.veracodeCredentials.username == 'user'
                     assert project.veracodeCredentials.password == 'pass'
+                    assert project.veracodeCredentials.id == 'id'
+                    assert project.veracodeCredentials.key == 'key'
+                    assert project.veracodeCredentials.outputDir == ''
                 }
             }
         """
-
 
         when:
         def result = GradleBuild('verifyProjectVeracodeCredentials')
 
         then:
         result.task(":verifyProjectVeracodeCredentials").outcome == SUCCESS
-
-
     }
 
 }

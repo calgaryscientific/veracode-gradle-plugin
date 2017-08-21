@@ -35,6 +35,6 @@ class VeracodeRemoveFileTask extends VeracodeTask {
     }
 
     void run() {
-        writeXml('build/remove-file.xml', uploadAPI().removeFile(project.app_id, project.fileId))
+        writeXml('remove-file.xml', uploadAPI().removeFile(project.app_id, project.fileId))
     }
 }

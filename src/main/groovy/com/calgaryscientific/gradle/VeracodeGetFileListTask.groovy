@@ -42,7 +42,7 @@ class VeracodeGetFileListTask extends VeracodeTask {
         } else {
             xmlResponse = uploadAPI().getFileList(project.app_id)
         }
-        Node filelist = writeXml('build/file-list.xml', xmlResponse)
+        Node filelist = writeXml('file-list.xml', xmlResponse)
         filelist.each() { file ->
             println "${file.@file_name}=${file.@file_status}"
         }

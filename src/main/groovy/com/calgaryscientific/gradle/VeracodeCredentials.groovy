@@ -27,9 +27,9 @@
 package com.calgaryscientific.gradle
 
 class VeracodeCredentials {
-    boolean apiCredentials
     String username
     String password
     String id
     String key
+    String outputDir
 }
