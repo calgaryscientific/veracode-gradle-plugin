@@ -26,27 +26,19 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeGetBuildInfoTask extends VeracodeGetBuildInfo {
-    static final String NAME = 'veracodeGetBuildInfo'
-
-    VeracodeGetBuildInfoTask() {
-        description = "Lists build information for the given applicaiton ID. If no build ID is provided, the latest will be used"
-        requiredArguments << 'app_id'
-        optionalArguments << 'build_id'
-    }
-
-    void run() {
-        String response
-        String file
-        if (project.hasProperty('build_id')) {
-            response = uploadAPI().getBuildInfo(project.app_id, project.build_id)
-            file = "build-info-${project.build_id}.xml"
-        } else {
-            response = uploadAPI().getBuildInfo(project.app_id)
-            file = 'build-info-latest.xml'
+abstract class VeracodeGetBuildInfo extends VeracodeTask {
+    static void printNodeInfo(Node buildInfo) {
+        buildInfo.each() { build ->
+            println "[build]"
+            build.attributes().each() { k, v ->
+                println "$k=$v"
+            }
+            build.children().each { child ->
+                println "\t[analysis_unit]"
+                child.attributes().each() { k, v ->
+                    println "\t$k=$v"
+                }
+            }
         }
-        Node buildInfo = writeXml(file, response)
-        printf "app_id=%s\n", buildInfo.@app_id
-        VeracodeGetBuildInfo.printNodeInfo(buildInfo)
     }
 }

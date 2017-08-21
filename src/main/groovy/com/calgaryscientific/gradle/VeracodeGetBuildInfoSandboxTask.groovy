@@ -26,10 +26,10 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeSandboxGetBuildInfoTask extends VeracodeTask {
+class VeracodeGetBuildInfoSandboxTask extends VeracodeGetBuildInfo {
     static final String NAME = 'veracodeSandboxGetBuildInfo'
 
-    VeracodeSandboxGetBuildInfoTask() {
+    VeracodeGetBuildInfoSandboxTask() {
         group = 'Veracode Sandbox'
         description = "Lists build information for the given applicaiton ID and sandbox ID. If no build ID is provided, the latest will be used"
         requiredArguments << 'app_id' << 'sandbox_id'
@@ -49,17 +49,6 @@ class VeracodeSandboxGetBuildInfoTask extends VeracodeTask {
         Node buildInfo = writeXml(file, response)
         printf "app_id=%s\n", buildInfo.@app_id
         printf "sandbox_id=%s\n", buildInfo.@sandbox_id
-        buildInfo.each() { build ->
-            println "[build]"
-            build.attributes().each() { k, v ->
-                println "$k=$v"
-            }
-            build.children().each { child ->
-                println "\t[analysis_unit]"
-                child.attributes().each() { k, v ->
-                    println "\t$k=$v"
-                }
-            }
-        }
+        VeracodeGetBuildInfo.printNodeInfo(buildInfo)
     }
 }
