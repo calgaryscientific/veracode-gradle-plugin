@@ -40,10 +40,10 @@ class VeracodeGetPreScanResultsTask extends VeracodeTask {
         String file
         if (project.hasProperty('build_id')) {
             response = uploadAPI().getPreScanResults(project.app_id, project.build_id)
-            file = "build/pre-scan-results-${project.build_id}.xml"
+            file = "pre-scan-results-${project.build_id}.xml"
         } else {
             response = uploadAPI().getPreScanResults(project.app_id)
-            file = 'build/pre-scan-results-latest.xml'
+            file = 'pre-scan-results-latest.xml'
         }
         Node xml = writeXml(file, response)
         xml.each() { node ->

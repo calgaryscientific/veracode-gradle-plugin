@@ -34,16 +34,16 @@ class VeracodeSandboxUploadFileTask extends VeracodeTask {
 
     VeracodeSandboxUploadFileTask() {
         group = 'Veracode Sandbox'
-        description = "Uploads all files from 'build/to-upload' folder to Veracode based on the given app_id and sandbox_id"
+        description = "Uploads all files from 'to-upload' folder to Veracode based on the given app_id and sandbox_id"
         requiredArguments << 'app_id' << 'sandbox_id'
         optionalArguments << 'maxUploadAttempts'
     }
 
     void run() {
         String response = ''
-        String lastUploadXMLFile = 'build/sandbox-upload-file-latest.xml'
+        String lastUploadXMLFile = 'sandbox-upload-file-latest.xml'
         UploadAPIWrapper update = uploadAPI()
-        File uploadFolder = new File('build/to-upload')
+        File uploadFolder = new File('to-upload')
         def error
         Integer tries = 1;
         Integer maxTries = Integer.parseInt((hasProperty('maxUploadAttempts') ? maxUploadAttempts : '10'))

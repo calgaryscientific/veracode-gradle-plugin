@@ -37,8 +37,8 @@ class VeracodeSandboxBeginScanTask extends VeracodeTask {
     }
 
     void run() {
-        String file = 'build/sandbox-begin-scan.xml'
-        String preScanFile = 'build/sandbox-pre-scan-results-latest.xml'
+        String file = 'sandbox-begin-scan.xml'
+        String preScanFile = 'sandbox-pre-scan-results-latest.xml'
         def moduleIds = []
         readXml(preScanFile).each() { module ->
             if (!module.@status.startsWith("(Fatal)")) {

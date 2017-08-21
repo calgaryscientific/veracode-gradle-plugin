@@ -41,7 +41,7 @@ class ReportFlawsByTeamTask extends VeracodeTask {
         def teams = new JsonSlurper().parse(new FileReader("src/apps/${project.app_id}/teams.json")).teams
         int count = 0
 
-        readXml('build/scan-results.xml').severity.each() { severity ->
+        readXml('scan-results.xml').severity.each() { severity ->
             severity.category.each() { category ->
                 category.cwe.each() { cwe ->
                     cwe.staticflaws.flaw.each() { flaw ->

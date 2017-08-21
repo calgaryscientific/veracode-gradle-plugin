@@ -35,7 +35,7 @@ class VeracodeDetailedReportPDFTask extends VeracodeTask {
     }
 
     void run() {
-        String file = "build/detailed-report-${project.build_id}.pdf"
+        String file = "detailed-report-${project.build_id}.pdf"
         new File(file).bytes = resultsAPI().detailedReportPdf(project.build_id)
         printf "report file: %s\n", file
     }

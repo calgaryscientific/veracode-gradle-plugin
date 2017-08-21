@@ -36,7 +36,7 @@ class VeracodeSandboxBeginPreScanTask extends VeracodeTask {
 	}
 
 	void run() {
-		String file = 'build/sandbox-begin-pre-scan.xml'
+		String file = 'sandbox-begin-pre-scan.xml'
 		Node xml = writeXml(
 			file,
 			uploadAPI().beginPreScan(project.app_id, project.sandbox_id)

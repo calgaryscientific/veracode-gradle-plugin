@@ -40,10 +40,10 @@ class VeracodeGetBuildInfoTask extends VeracodeTask {
         String file
         if (project.hasProperty('build_id')) {
             response = uploadAPI().getBuildInfo(project.app_id, project.build_id)
-            file = "build/build-info-${project.build_id}.xml"
+            file = "build-info-${project.build_id}.xml"
         } else {
             response = uploadAPI().getBuildInfo(project.app_id)
-            file = 'build/build-info-latest.xml'
+            file = 'build-info-latest.xml'
         }
         Node buildInfo = writeXml(file, response)
         printf "app_id=%s\n", buildInfo.@app_id

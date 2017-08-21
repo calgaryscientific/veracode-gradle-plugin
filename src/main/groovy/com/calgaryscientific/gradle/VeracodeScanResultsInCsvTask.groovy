@@ -34,7 +34,7 @@ class VeracodeScanResultsInCsvTask extends VeracodeTask {
     }
 
     void run() {
-        File csvFile = new File('build/scan-results.csv')
+        File csvFile = new File('scan-results.csv')
         csvFile.newWriter()
         csvFile << ["Issue Id",
                     "Severity",
@@ -51,7 +51,7 @@ class VeracodeScanResultsInCsvTask extends VeracodeTask {
                     "Mitigation Description",
                     "Mitigation Date"].join(",") + "\n"
 
-        readXml('build/scan-results.xml').severity.each() { severity ->
+        readXml('scan-results.xml').severity.each() { severity ->
             severity.category.each() { category ->
                 category.cwe.each() { cwe ->
                     cwe.staticflaws.flaw.each() { flaw ->

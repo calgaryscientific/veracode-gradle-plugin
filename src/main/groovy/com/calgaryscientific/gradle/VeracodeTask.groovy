@@ -128,7 +128,11 @@ abstract class VeracodeTask extends DefaultTask {
     }
 
     protected def readXml(String filename) {
-        new XmlParser().parseText(GFileUtils.readFile(new File(filename)))
+        if (project.veracodeCredentials.outputDir != null && project.veracodeCredentials.outputDir != "") {
+            new XmlParser().parseText(GFileUtils.readFile(new File(project.veracodeCredentials.outputDir, filename)))
+        } else {
+            new XmlParser().parseText(GFileUtils.readFile(new File("${project.buildDir}/veracode", filename)))
+        }
     }
 
     protected List readListFromFile(File file) {

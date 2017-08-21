@@ -36,7 +36,7 @@ class VeracodeDetailedReportTask extends VeracodeTask {
 
     void run() {
         String results = resultsAPI().detailedReport(project.build_id)
-        String file = "build/detailed-report-${project.build_id}.xml"
+        String file = "detailed-report-${project.build_id}.xml"
         writeXml(file, results)
         printf "report file: %s\n", file
     }

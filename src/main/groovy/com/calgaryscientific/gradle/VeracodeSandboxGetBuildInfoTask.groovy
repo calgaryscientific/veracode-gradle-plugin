@@ -41,10 +41,10 @@ class VeracodeSandboxGetBuildInfoTask extends VeracodeTask {
         String file
         if (project.hasProperty('build_id')) {
             response = uploadAPI().getBuildInfo(project.app_id, project.build_id, project.sandbox_id)
-            file = "build/sandbox-build-info-${project.build_id}.xml"
+            file = "sandbox-build-info-${project.build_id}.xml"
         } else {
             response = uploadAPI().getBuildInfo(project.app_id, "", project.sandbox_id)
-            file = 'build/sandbox-build-info-latest.xml'
+            file = 'sandbox-build-info-latest.xml'
         }
         Node buildInfo = writeXml(file, response)
         printf "app_id=%s\n", buildInfo.@app_id
