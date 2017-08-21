@@ -111,7 +111,6 @@ class VeracodeTaskTest extends Specification {
                     assert project.veracodeCredentials.password == 'pass'
                     assert project.veracodeCredentials.id == 'id'
                     assert project.veracodeCredentials.key == 'key'
-                    assert project.veracodeCredentials.outputDir == ''
                 }
             }
         """

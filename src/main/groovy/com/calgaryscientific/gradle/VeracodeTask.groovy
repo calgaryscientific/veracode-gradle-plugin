@@ -115,11 +115,17 @@ abstract class VeracodeTask extends DefaultTask {
     }
 
     protected Node writeXml(String filename, String content) {
-        if (project.veracodeCredentials.outputDir != null && project.veracodeCredentials.outputDir != "") {
-            GFileUtils.writeFile(content, new File(project.veracodeCredentials.outputDir, filename))
-        } else {
-            GFileUtils.writeFile(content, new File("${project.buildDir}/veracode", filename))
+        File outputFile = new File("${project.buildDir}/veracode", filename)
+        GFileUtils.writeFile(content, outputFile)
+        Node xml = new XmlParser().parseText(content)
+        if (xml.name() == 'error') {
+            fail("ERROR: ${xml.text()}\nSee ${filename} for details!")
         }
+        xml
+    }
+
+    protected Node writeXml(String content) {
+        GFileUtils.writeFile(content, outputFile)
         Node xml = new XmlParser().parseText(content)
         if (xml.name() == 'error') {
             fail("ERROR: ${xml.text()}\nSee ${filename} for details!")
@@ -128,11 +134,7 @@ abstract class VeracodeTask extends DefaultTask {
     }
 
     protected def readXml(String filename) {
-        if (project.veracodeCredentials.outputDir != null && project.veracodeCredentials.outputDir != "") {
-            new XmlParser().parseText(GFileUtils.readFile(new File(project.veracodeCredentials.outputDir, filename)))
-        } else {
-            new XmlParser().parseText(GFileUtils.readFile(new File("${project.buildDir}/veracode", filename)))
-        }
+        new XmlParser().parseText(GFileUtils.readFile(new File("${project.buildDir}/veracode", filename)))
     }
 
     protected List readListFromFile(File file) {

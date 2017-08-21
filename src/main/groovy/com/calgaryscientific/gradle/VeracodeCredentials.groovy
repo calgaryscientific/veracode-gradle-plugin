@@ -31,5 +31,4 @@ class VeracodeCredentials {
     String password
     String id
     String key
-    String outputDir
 }

@@ -28,6 +28,8 @@ package com.calgaryscientific.gradle
 
 import groovy.io.FileType
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.OutputFile
 
 class VeracodeUploadFileTask extends VeracodeTask {
     static final String NAME = 'veracodeUploadFile'
@@ -38,16 +40,19 @@ class VeracodeUploadFileTask extends VeracodeTask {
         optionalArguments << 'maxUploadAttempts'
     }
 
+    File outputFile = new File("${project.buildDir}/veracode", 'upload-file-latest.xml')
+
+    @InputDirectory
+    File inputDir = new File("${project.buildDir}/veracode/to-upload")
+
     void run() {
         String xmlResponse = ''
-        String lastUploadXMLFile = 'upload-file-latest.xml'
         UploadAPIWrapper update = uploadAPI()
-        File uploadFolder = new File('to-upload')
         def error
         Integer tries = 1;
         Integer maxTries = Integer.parseInt((hasProperty('maxUploadAttempts') ? maxUploadAttempts : '10'))
 
-        while (uploadFolder.list().length > 0 && (tries <= maxTries || maxTries == 0)) {
+        while (inputDir.list().length > 0 && (tries <= maxTries || maxTries == 0)) {
             println ''
             if (tries > 1) {
                 println "Attempt ${tries}"
@@ -55,16 +60,17 @@ class VeracodeUploadFileTask extends VeracodeTask {
             println "Maximum upload attempts = ${maxTries} (0 means keep trying)"
             println ''
             def fileList = []
-            uploadFolder.eachFileRecurse(FileType.FILES) { file ->
+            inputDir.eachFileRecurse(FileType.FILES) { file ->
                 fileList << file
             }
-            // upload each file in uploadFolder
+            // upload each file in inputDir
             for (File file : fileList) {
                 try {
+                    println "Processing ${file.name}"
                     String response = update.uploadFile(project.app_id, file.absolutePath)
-                    Node xml = writeXml(lastUploadXMLFile, response)
+                    Node xml = writeXml(response)
                     project.delete file.absolutePath
-                    println "Processed ${file.name}"
+                    println "Uploaded ${file.name}"
                 } catch (Exception e) {
                     println ''
                     println e
