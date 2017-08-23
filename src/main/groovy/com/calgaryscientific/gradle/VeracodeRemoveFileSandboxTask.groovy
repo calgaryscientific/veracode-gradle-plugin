@@ -26,15 +26,17 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeRemoveFileTask extends VeracodeTask {
-    static final String NAME = 'veracodeRemoveFile'
+class VeracodeRemoveFileSandboxTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxRemoveFile'
 
-    VeracodeRemoveFileTask() {
-        description = 'Remove file based on the given app_id and file_id combination'
-        requiredArguments << 'app_id' << 'file_id'
+    VeracodeRemoveFileSandboxTask() {
+        group = 'Veracode Sandbox'
+        description = 'Remove file based on the given app_id, sandbox_id and file_id combination'
+        requiredArguments << 'app_id' << 'sandbox_id' << 'file_id'
     }
 
     void run() {
-        writeXml('remove-file.xml', uploadAPI().removeFile(project.app_id, project.file_id))
+        writeXml('sandbox-remove-file.xml', uploadAPI().removeFile(project.app_id, project.file_id, project.sandbox_id))
     }
 }
+

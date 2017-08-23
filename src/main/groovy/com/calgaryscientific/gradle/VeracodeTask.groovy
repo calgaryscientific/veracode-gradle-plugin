@@ -41,10 +41,9 @@ abstract class VeracodeTask extends DefaultTask {
             'build_version'    : 'xxx',
             'dir'              : 'xxx',
             'force'            : 'force',
-            'fileId'           : '123',
+            'file_id'          : '123',
             'mode'             : 'action|actionSummary|verbose',
             'maxUploadAttempts': '123',
-            'fileId'           : 'xxx',
             'build_id1'        : '123',
             'build_id2'        : '123'
     ]

@@ -30,6 +30,7 @@ class VeracodeGetFileListSandboxTask extends VeracodeTask {
     static final String NAME = 'veracodeSandboxGetFileList'
 
     VeracodeGetFileListSandboxTask() {
+        group = 'Veracode Sandbox'
         description = "Lists all files for the given app_id, sandbox_id and build_id combination. If no build_id is provided, it will use the latest one"
         requiredArguments << 'app_id' << 'sandbox_id'
         optionalArguments << 'build_id'
