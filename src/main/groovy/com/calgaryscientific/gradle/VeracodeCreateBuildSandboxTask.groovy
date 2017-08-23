@@ -26,24 +26,43 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeSandboxGetBuildListTask extends VeracodeTask {
-    static final String NAME = 'veracodeSandboxGetBuildList'
+class VeracodeCreateBuildSandboxTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxCreateBuild'
 
-    VeracodeSandboxGetBuildListTask() {
+    VeracodeCreateBuildSandboxTask() {
         group = 'Veracode Sandbox'
-        description = 'List builds for the given aplication ID and sandbox ID'
-        requiredArguments << 'app_id' << 'sandbox_id'
+        description = 'Creates a new build for the given application ID and sandbox ID, using build_version as the identifier'
+        requiredArguments << 'app_id' << 'sandbox_id' << 'build_version'
     }
 
     void run() {
-        String file = 'sandbox-build-list.xml'
-        Node xml = writeXml(
+        String file = 'sandbox-create-build-list.xml'
+        Node buildInfo = writeXml(
                 file,
-                uploadAPI().getBuildList(project.app_id, project.sandbox_id)
+                uploadAPI().createBuild(
+                        project.app_id,
+                        project.build_version,
+                        "", // platform
+                        "", // platform_id
+                        "", // lifecycle_stage
+                        "", // lifecycle_stage_id
+                        "", // launch_date
+                        project.sandbox_id
+                )
         )
-        xml.each() { build ->
-            printf "app_id=%-10s sandbox_id=%-10s build_id=%-10s version=\"%s\"\n",
-                    xml.@app_id, xml.@sandbox_id, build.@build_id, build.@version
+        printf "app_id=%s\n", buildInfo.@app_id
+        printf "sandbox_id=%s\n", buildInfo.@sandbox_id
+        buildInfo.each() { build ->
+            println "[build]"
+            build.attributes().each() { k, v ->
+                println "$k=$v"
+            }
+            build.children().each { child ->
+                println "\t[analysis_unit]"
+                child.attributes().each() { k, v ->
+                    println "\t$k=$v"
+                }
+            }
         }
     }
 }
