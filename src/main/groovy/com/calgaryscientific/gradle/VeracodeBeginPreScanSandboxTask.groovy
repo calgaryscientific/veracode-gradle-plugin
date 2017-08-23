@@ -26,10 +26,10 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeSandboxBeginPreScanTask extends VeracodeTask {
+class VeracodeBeginPreScanSandboxTask extends VeracodeTask {
 	static final String NAME = 'veracodeSandboxBeginPreScan'
 
-	VeracodeSandboxBeginPreScanTask() {
+	VeracodeBeginPreScanSandboxTask() {
 		group = 'Veracode Sandbox'
 		description = 'Begin Veracode pre-scan for the given application ID and sanbox ID'
 		requiredArguments << 'app_id' << 'sandbox_id'
