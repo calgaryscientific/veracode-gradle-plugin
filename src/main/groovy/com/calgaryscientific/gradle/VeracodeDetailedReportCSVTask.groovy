@@ -26,12 +26,15 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeScanResultsInCsvTask extends VeracodeTask {
-    static final String NAME = 'veracodeScanResultsInCsv'
+class VeracodeDetailedReportCSVTask extends VeracodeTask {
+    static final String NAME = 'veracodeDetailedReportCSV'
 
-    VeracodeScanResultsInCsvTask() {
-        description = 'Gets the Veracode scan results based on the build id passed in and convert it to csv format'
+    VeracodeDetailedReportCSVTask() {
+        description = 'Gets the Veracode scan results based on the build id passed in and convert it to CSV format'
+//        dependsOn 'veracodeDetailedReport'
     }
+
+    // TODO: Require build_id
 
     void run() {
         File csvFile = new File('scan-results.csv')
