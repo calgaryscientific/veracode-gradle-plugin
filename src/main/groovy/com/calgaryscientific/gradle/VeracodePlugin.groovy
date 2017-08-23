@@ -30,6 +30,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 
+@groovy.transform.CompileStatic
 class VeracodePlugin implements Plugin<Project> {
     void apply(Project project) {
         project.extensions.create('veracodeCredentials', VeracodeCredentials)
@@ -46,9 +47,8 @@ class VeracodePlugin implements Plugin<Project> {
         project.task(VeracodeBeginPreScanTask.NAME, type: VeracodeBeginPreScanTask)
         project.task(VeracodeGetPreScanResultsTask.NAME, type: VeracodeGetPreScanResultsTask)
         project.task(VeracodeBeginScanTask.NAME, type: VeracodeBeginScanTask)
-//        project.task(VeracodeDetailedReportTask.NAME, type: VeracodeDetailedReportTask)
+        project.task(VeracodeDetailedReportTask.NAME, type: VeracodeDetailedReportTask)
         project.task(VeracodeDetailedReportPDFTask.NAME, type: VeracodeDetailedReportPDFTask)
-        Task veracodeScanResultsTask = project.task(VeracodeDetailedReportTask.NAME, type: VeracodeDetailedReportTask)
         project.task(VeracodeDetailedReportCSVTask.NAME, type: VeracodeDetailedReportCSVTask)
         project.task(VeracodeRemoveFileTask.NAME, type: VeracodeRemoveFileTask)
         project.task(ReportFlawsByTeamTask.NAME, type: ReportFlawsByTeamTask)

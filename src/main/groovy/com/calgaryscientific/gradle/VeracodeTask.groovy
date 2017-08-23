@@ -33,8 +33,9 @@ import org.gradle.util.GFileUtils
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
 
+@groovy.transform.CompileStatic
 abstract class VeracodeTask extends DefaultTask {
-    final static def validArguments = [
+    final static Map<String, String> validArguments = [
             'app_id'           : '123',
             'sandbox_id'       : '123',
             'build_id'         : '123',
@@ -47,6 +48,8 @@ abstract class VeracodeTask extends DefaultTask {
             'build_id1'        : '123',
             'build_id2'        : '123'
     ]
+
+    File outputFile
 
     List<String> requiredArguments = []
     List<String> optionalArguments = []
@@ -86,8 +89,8 @@ abstract class VeracodeTask extends DefaultTask {
     }
 
     protected boolean useAPICredentials() {
-        if (project.veracodeCredentials.username != "" &&
-                project.veracodeCredentials.password != "") {
+        VeracodeCredentials vc = project.findProperty("veracodeCredentials") as VeracodeCredentials
+        if (vc.username != "" && vc.password != "") {
             return false
         }
         return true
@@ -95,39 +98,45 @@ abstract class VeracodeTask extends DefaultTask {
 
     protected UploadAPIWrapper uploadAPI() {
         UploadAPIWrapper api = new UploadAPIWrapper()
+        VeracodeCredentials vc = project.findProperty("veracodeCredentials") as VeracodeCredentials
         if (useAPICredentials()) {
-            api.setUpApiCredentials("${project.veracodeCredentials.id}", "${project.veracodeCredentials.key}")
+            api.setUpApiCredentials(vc.id, vc.key)
         } else {
-            api.setUpCredentials("${project.veracodeCredentials.username}", "${project.veracodeCredentials.password}")
+            api.setUpCredentials(vc.username, vc.password)
         }
         return api
     }
 
     protected ResultsAPIWrapper resultsAPI() {
         ResultsAPIWrapper api = new ResultsAPIWrapper()
+        VeracodeCredentials vc = project.findProperty("veracodeCredentials") as VeracodeCredentials
         if (useAPICredentials()) {
-            api.setUpApiCredentials("${project.veracodeCredentials.id}", "${project.veracodeCredentials.key}")
+            api.setUpApiCredentials(vc.id, vc.key)
         } else {
-            api.setUpCredentials("${project.veracodeCredentials.username}", "${project.veracodeCredentials.password}")
+            api.setUpCredentials(vc.username, vc.password)
         }
         return api
     }
 
-    protected Node writeXml(String filename, String content) {
-        File outputFile = new File("${project.buildDir}/veracode", filename)
-        GFileUtils.writeFile(content, outputFile)
+    protected Node writeXml(File file, String content) {
+        GFileUtils.writeFile(content, file)
         Node xml = new XmlParser().parseText(content)
         if (xml.name() == 'error') {
-            fail("ERROR: ${xml.text()}\nSee ${filename} for details!")
+            fail("ERROR: ${xml.text()}\nSee ${file} for details!")
         }
         xml
+    }
+
+    protected Node writeXml(String filename, String content) {
+        File file = new File("${project.buildDir}/veracode", filename)
+        writeXml(file, content)
     }
 
     protected Node writeXml(String content) {
         GFileUtils.writeFile(content, outputFile)
         Node xml = new XmlParser().parseText(content)
         if (xml.name() == 'error') {
-            fail("ERROR: ${xml.text()}\nSee ${filename} for details!")
+            fail("ERROR: ${xml.text()}\nSee ${outputFile} for details!")
         }
         xml
     }
@@ -141,7 +150,7 @@ abstract class VeracodeTask extends DefaultTask {
     }
 
     protected List readListFromFile(File file) {
-        def set = new HashSet<Set>();
+        def set = new HashSet<String>();
         file.eachLine { line ->
             if (set.contains(line)) {
                 println "ERROR: duplicate line: [$line]"
