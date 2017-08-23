@@ -26,6 +26,8 @@
 
 package com.calgaryscientific.gradle
 
+import org.gradle.api.tasks.OutputFile
+
 class VeracodeDetailedReportTask extends VeracodeTask {
     static final String NAME = 'veracodeDetailedReport'
 
@@ -34,9 +36,17 @@ class VeracodeDetailedReportTask extends VeracodeTask {
         requiredArguments << 'build_id'
     }
 
+    // TODO Review use of annotation.
+    // It depends on whether or not partial scans return a report.
+    // If they do return a report then it is not safe to cache the result.
+    @OutputFile
+    File getOutputFile() {
+        File outputFile = new File("${project.buildDir}/veracode", "detailed-report-${project.build_id}.xml")
+    }
+
     void run() {
         String results = resultsAPI().detailedReport(project.build_id)
-        String file = "detailed-report-${project.build_id}.xml"
+        File file = getOutputFile()
         writeXml(file, results)
         printf "report file: %s\n", file
     }

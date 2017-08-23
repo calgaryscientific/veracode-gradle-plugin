@@ -26,20 +26,35 @@
 
 package com.calgaryscientific.gradle
 
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.OutputFile
+
 class VeracodeDetailedReportCSVTask extends VeracodeTask {
     static final String NAME = 'veracodeDetailedReportCSV'
 
     VeracodeDetailedReportCSVTask() {
         description = 'Gets the Veracode scan results based on the build id passed in and convert it to CSV format'
-//        dependsOn 'veracodeDetailedReport'
+        requiredArguments << 'build_id'
+        dependsOn 'veracodeDetailedReport'
     }
 
-    // TODO: Require build_id
+    VeracodeDetailedReportTask veracodeDetailedReport =  new VeracodeDetailedReportTask()
+
+    @InputFile
+    File inputFile = veracodeDetailedReport.getOutputFile()
+
+    // TODO Review use of annotation.
+    // It depends on whether or not partial scans return a report.
+    // If they do return a report then it is not safe to cache the result.
+    @OutputFile
+    File getOutputFile() {
+        File outputFile = new File("${project.buildDir}/veracode", "detailed-report-${project.build_id}.csv")
+    }
 
     void run() {
-        File csvFile = new File('scan-results.csv')
-        csvFile.newWriter()
-        csvFile << ["Issue Id",
+        File file = getOutputFile()
+        file.newWriter()
+        file << ["Issue Id",
                     "Severity",
                     "Exploit Level",
                     "CWE Id",
@@ -54,7 +69,7 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
                     "Mitigation Description",
                     "Mitigation Date"].join(",") + "\n"
 
-        readXml('scan-results.xml').severity.each() { severity ->
+        readXml(inputFile).severity.each() { severity ->
             severity.category.each() { category ->
                 category.cwe.each() { cwe ->
                     cwe.staticflaws.flaw.each() { flaw ->
@@ -74,10 +89,11 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
                                    flaw.mitigations?.mitigation[0]?.@date]
                                 .collect { '"' + (it == null ? "" : it.replace('"', '""')) + '"' }
                         def rowString = row.join(',')
-                        csvFile << rowString + "\n"
+                        file << rowString + "\n"
                     }
                 }
             }
         }
+        printf "report file: %s\n", file
     }
 }
