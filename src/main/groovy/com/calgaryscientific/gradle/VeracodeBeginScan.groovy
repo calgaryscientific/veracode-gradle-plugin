@@ -26,31 +26,19 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeGetPreScanResultsTask extends VeracodeTask {
-    static final String NAME = 'veracodeGetPreScanResults'
+abstract class VeracodeBeginScan extends VeracodeTask {
 
-    VeracodeGetPreScanResultsTask() {
-        description = 'Gets the pre-scan results for the given application ID'
-        requiredArguments << 'app_id'
-        optionalArguments << 'build_id'
+    static List<String> extractModuleIds(Node xml) {
+        List<String> moduleIds = []
+        xml.each() { module ->
+            if (!module.@status.startsWith("(Fatal)")) {
+                moduleIds << module.@id
+                printf "Selecting module: %s - %s\n", module.@name, module.@status
+            } else {
+                printf "WARNING: Skipping failed module: %s - %s\n", module.@name, module.@status
+            }
+        }
+        return moduleIds
     }
 
-    File outputFile = new File("${project.buildDir}/veracode", 'pre-scan-results-latest.xml')
-
-    void run() {
-        String response
-        String file
-        if (project.hasProperty('build_id')) {
-            response = uploadAPI().getPreScanResults(project.app_id, project.build_id)
-            file = "pre-scan-results-${project.build_id}.xml"
-        } else {
-            response = uploadAPI().getPreScanResults(project.app_id)
-            file = outputFile
-        }
-        Node xml = writeXml(file, response)
-        xml.each() { node ->
-            printf "app_id=%-10s build_id=%-10s id=%-10s name=\"%s\" status=\"%s\"\n",
-                    xml.@app_id, xml.@build_id, node.@id, node.@name, node.@status
-        }
-    }
 }

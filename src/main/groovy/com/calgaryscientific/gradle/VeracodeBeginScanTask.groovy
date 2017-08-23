@@ -26,7 +26,7 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeBeginScanTask extends VeracodeTask {
+class VeracodeBeginScanTask extends VeracodeBeginScan {
     static final String NAME = 'veracodeBeginScan'
 
     VeracodeBeginScanTask() {
@@ -35,22 +35,16 @@ class VeracodeBeginScanTask extends VeracodeTask {
         dependsOn "veracodeGetPreScanResults"
     }
 
+    File outputFile = new File("${project.buildDir}/veracode", 'begin-scan.xml')
+
+    def preScan =  new VeracodeGetPreScanResultsTask()
+    File preScanResultsOutputFile = preScan.outputFile
+
     void run() {
-        String file = 'begin-scan.xml'
-        String preScanFile = 'pre-scan-results-latest.xml'
-        def moduleIds = []
-        readXml(preScanFile).each() { module ->
-            if (!module.@status.startsWith("(Fatal)")) {
-                moduleIds << module.@id
-                printf "Selecting module: %s - %s\n", module.@name, module.@status
-            } else {
-                printf "WARNING: Skipping failed module: %s - %s\n", module.@name, module.@status
-            }
-        }
+        List<String> moduleIds = extractModuleIds(readXml(preScanResultsOutputFile))
         println "Modules found: ${moduleIds.size()}"
         println "Modules found: ${moduleIds.join(",")}"
         Node xml = writeXml(
-                file,
                 uploadAPI().beginScan(
                         project.app_id,
                         moduleIds.join(","),
@@ -59,8 +53,8 @@ class VeracodeBeginScanTask extends VeracodeTask {
                         "") // scan_previously_selected_modules
         )
         xml.each() { node ->
-            printf "app_id=%-10s sandbox_id=%-10s build_id=%-10s id=%-10s name=\"%s\" status=\"%s\"\n",
-                    xml.@app_id, xml.@sandbox_id, xml.@build_id, node.@id, node.@name, node.@status
+            printf "app_id=%-10s build_id=%-10s id=%-10s name=\"%s\" status=\"%s\"\n",
+                    xml.@app_id, xml.@build_id, node.@id, node.@name, node.@status
         }
     }
 }

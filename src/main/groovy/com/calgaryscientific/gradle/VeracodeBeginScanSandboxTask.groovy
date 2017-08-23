@@ -26,27 +26,34 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeSandboxGetPreScanResultsTask extends VeracodeTask {
-    static final String NAME = 'veracodeSandboxGetPreScanResults'
+class VeracodeBeginScanSandboxTask extends VeracodeBeginScan {
+    static final String NAME = 'veracodeSandboxBeginScan'
 
-    VeracodeSandboxGetPreScanResultsTask() {
+    VeracodeBeginScanSandboxTask() {
         group = 'Veracode Sandbox'
-        description = 'Gets the pre-scan results for the given application ID and sandbox ID'
+        description = 'Starts a Veracode scan for given application ID and sanbox ID'
         requiredArguments << 'app_id' << 'sandbox_id'
-        optionalArguments << 'build_id'
+        dependsOn "veracodeSandboxGetPreScanResults"
     }
 
+    File outputFile = new File("${project.buildDir}/veracode", 'sandbox-begin-scan.xml')
+
+    def preScan =  new VeracodeGetPreScanResultsSandboxTask()
+    File preScanResultsOutputFile = preScan.outputFile
+
     void run() {
-        String response
-        String file
-        if (project.hasProperty('build_id')) {
-            response = uploadAPI().getPreScanResults(project.app_id, project.build_id, project.sandbox_id)
-            file = "sandbox-pre-scan-results-${project.build_id}.xml"
-        } else {
-            response = uploadAPI().getPreScanResults(project.app_id, "", project.sandbox_id)
-            file = 'sandbox-pre-scan-results-latest.xml'
-        }
-        Node xml = writeXml(file, response)
+        List<String> moduleIds = extractModuleIds(readXml(preScanResultsOutputFile))
+        println "Modules found: ${moduleIds.size()}"
+        println "Modules found: ${moduleIds.join(",")}"
+        Node xml = writeXml(
+                uploadAPI().beginScan(
+                        project.app_id,
+                        moduleIds.join(","),
+                        "", // scan_all_top_level_modules
+                        "scan_selected_modules",
+                        "", // scan_previously_selected_modules
+                        project.sandbox_id)
+        )
         xml.each() { node ->
             printf "app_id=%-10s sandbox_id=%-10s build_id=%-10s id=%-10s name=\"%s\" status=\"%s\"\n",
                     xml.@app_id, xml.@sandbox_id, xml.@build_id, node.@id, node.@name, node.@status

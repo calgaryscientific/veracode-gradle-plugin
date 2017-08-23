@@ -133,8 +133,12 @@ abstract class VeracodeTask extends DefaultTask {
         xml
     }
 
-    protected def readXml(String filename) {
-        new XmlParser().parseText(GFileUtils.readFile(new File("${project.buildDir}/veracode", filename)))
+    protected Node readXml(File file) {
+        new XmlParser().parseText(GFileUtils.readFile(file))
+    }
+
+    protected Node readXml(String filename) {
+        readXml(new File("${project.buildDir}/veracode", filename))
     }
 
     protected List readListFromFile(File file) {

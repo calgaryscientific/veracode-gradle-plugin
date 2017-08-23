@@ -122,4 +122,27 @@ class VeracodeTaskTest extends Specification {
         result.task(":verifyProjectVeracodeCredentials").outcome == SUCCESS
     }
 
+    def 'Test extractModuleIds function'() {
+        given:
+        String xmlStr = '''
+<prescanresults xmlns="something" xmlns:xsi="something" app_id="123" build_id="456" prescanresults_version="1.4">
+   <module has_fatal_errors="false" id="789" name="goodlib.dll" status="OK">
+      <file_issue details="Found (Optional)" filename="path.pdb"/>
+   </module>
+   <module has_fatal_errors="true" id="012" name="badlib.dll" status="(Fatal)PDB Files Missing - 1 File">
+      <file_issue details="Not Found (Required)" filename="path"/>
+   </module>
+</prescanresults>
+'''
+
+        when:
+        XmlParser xmlParser = new XmlParser()
+        Node xml = xmlParser.parseText(xmlStr)
+        List<String> moduleIds = VeracodeBeginScan.extractModuleIds(xml)
+
+        then:
+        assert moduleIds[0] == "789"
+
+    }
+
 }

@@ -57,11 +57,11 @@ class VeracodePlugin implements Plugin<Project> {
         project.task(VeracodeSandboxGetFileListTask.NAME, type: VeracodeSandboxGetFileListTask)
         project.task(VeracodeSandboxGetBuildListTask.NAME, type: VeracodeSandboxGetBuildListTask)
         project.task(VeracodeSandboxCreateBuildTask.NAME, type: VeracodeSandboxCreateBuildTask)
-        project.task(VeracodeSandboxDeleteBuildTask.NAME, type: VeracodeSandboxDeleteBuildTask)
-        project.task(VeracodeSandboxBeginPreScanTask.NAME, type: VeracodeSandboxBeginPreScanTask)
-        project.task(VeracodeSandboxBeginScanTask.NAME, type: VeracodeSandboxBeginScanTask)
-        project.task(VeracodeSandboxGetPreScanResultsTask.NAME, type: VeracodeSandboxGetPreScanResultsTask)
-        project.task(VeracodeSandboxGetBuildInfoTask.NAME, type: VeracodeSandboxGetBuildInfoTask)
-        project.task(VeracodeSandboxUploadFileTask.NAME, type: VeracodeSandboxUploadFileTask)
+        project.task(VeracodeDeleteBuildSandboxTask.NAME,       type: VeracodeDeleteBuildSandboxTask)
+        project.task(VeracodeBeginPreScanSandboxTask.NAME,      type: VeracodeBeginPreScanSandboxTask)
+        project.task(VeracodeBeginScanSandboxTask.NAME,         type: VeracodeBeginScanSandboxTask)
+        project.task(VeracodeGetPreScanResultsSandboxTask.NAME, type: VeracodeGetPreScanResultsSandboxTask)
+        project.task(VeracodeGetBuildInfoSandboxTask.NAME,      type: VeracodeGetBuildInfoSandboxTask)
+        project.task(VeracodeUploadFileSandboxTask.NAME,        type: VeracodeUploadFileSandboxTask)
     }
 }
