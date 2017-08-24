@@ -26,10 +26,11 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.io.FileType
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 
 abstract class VeracodeUploadFile extends VeracodeTask {
+
+    abstract Set<File> getFileSet()
 
     void upload() {
         String xmlResponse = ''
@@ -44,12 +45,7 @@ abstract class VeracodeUploadFile extends VeracodeTask {
         }
         println "Maximum upload attempts = ${maxTries} (0 means keep trying)"
         println ''
-        def fileList = []
-        inputDir.eachFileRecurse(FileType.FILES) { file ->
-            fileList << file
-        }
-        // upload each file in inputDir
-        for (File file : fileList) {
+        for (File file : getFileSet()) {
             boolean success = false
             while (!success && (tries <= maxTries || maxTries == 0)) {
                 try {

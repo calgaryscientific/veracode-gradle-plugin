@@ -28,12 +28,11 @@ package com.calgaryscientific.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 
 @groovy.transform.CompileStatic
 class VeracodePlugin implements Plugin<Project> {
     void apply(Project project) {
-        project.extensions.create('veracodeCredentials', VeracodeCredentials)
+        project.extensions.create('veracodeSetup', VeracodeSetup)
 
         // App tasks
         project.task(VeracodeBeginPreScanTask.NAME, type: VeracodeBeginPreScanTask)

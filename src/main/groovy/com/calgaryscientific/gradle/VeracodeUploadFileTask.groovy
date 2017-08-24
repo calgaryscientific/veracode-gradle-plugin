@@ -28,14 +28,14 @@ package com.calgaryscientific.gradle
 
 import groovy.io.FileType
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
-import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputFile
 
 class VeracodeUploadFileTask extends VeracodeUploadFile {
     static final String NAME = 'veracodeUploadFile'
 
     VeracodeUploadFileTask() {
-        description = "Uploads all files from 'to-upload' folder to Veracode based on the given app_id"
+        description = "Uploads all files defined in 'filesToUpload' to Veracode based on the given app_id"
         requiredArguments << 'app_id'
         optionalArguments << 'maxUploadAttempts'
     }
@@ -43,8 +43,15 @@ class VeracodeUploadFileTask extends VeracodeUploadFile {
     @OutputFile
     File outputFile = new File("${project.buildDir}/veracode", 'upload-file-latest.xml')
 
-    @InputDirectory
-    File inputDir = new File("${project.buildDir}/veracode/to-upload")
+    @InputFiles
+    Set<File> getFileSet() {
+        Set<File> fc
+        if (project.hasProperty("veracodeSetup")) {
+            VeracodeSetup veracodeSetup = project.findProperty("veracodeSetup")
+            fc = veracodeSetup.filesToUpload
+        }
+        return fc
+    }
 
     String uploadFile(UploadAPIWrapper api, String filepath) {
         return api.uploadFile(project.app_id, filepath)

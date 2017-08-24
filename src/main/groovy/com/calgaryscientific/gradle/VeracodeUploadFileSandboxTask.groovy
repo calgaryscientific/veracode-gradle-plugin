@@ -27,7 +27,7 @@
 package com.calgaryscientific.gradle
 
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
-import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputFile
 
 class VeracodeUploadFileSandboxTask extends VeracodeUploadFile {
@@ -35,7 +35,7 @@ class VeracodeUploadFileSandboxTask extends VeracodeUploadFile {
 
     VeracodeUploadFileSandboxTask() {
         group = 'Veracode Sandbox'
-        description = "Uploads all files from 'to-upload' folder to Veracode based on the given app_id and sandbox_id"
+        description = "Uploads all files defined in 'sandboxFilesToUpload' to Veracode based on the given app_id and sandbox_id"
         requiredArguments << 'app_id' << 'sandbox_id'
         optionalArguments << 'maxUploadAttempts'
     }
@@ -43,8 +43,15 @@ class VeracodeUploadFileSandboxTask extends VeracodeUploadFile {
     @OutputFile
     File outputFile = new File("${project.buildDir}/veracode", 'sandbox-upload-file-latest.xml')
 
-    @InputDirectory
-    File inputDir = new File("${project.buildDir}/veracode/to-upload")
+    @InputFiles
+    Set<File> getFileSet() {
+        Set<File> fc
+        if (project.hasProperty("veracodeSetup")) {
+            VeracodeSetup veracodeSetup = project.findProperty("veracodeSetup")
+            fc = veracodeSetup.sandboxFilesToUpload
+        }
+        return fc
+    }
 
     String uploadFile(UploadAPIWrapper api, String filepath) {
         return api.uploadFile(project.app_id, filepath, project.sandbox_id)

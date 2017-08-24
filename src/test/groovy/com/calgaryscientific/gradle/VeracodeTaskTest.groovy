@@ -26,6 +26,7 @@
 
 package com.calgaryscientific.gradle
 
+import org.gradle.api.file.FileTree
 import org.gradle.testkit.runner.UnexpectedBuildFailure
 import spock.lang.Specification
 import org.gradle.testkit.runner.GradleRunner
@@ -93,36 +94,42 @@ class VeracodeTaskTest extends Specification {
         correctUsage == "Missing required arguments: gradle VeracodeGetBuildList -Papp_id=123 [-Pbuild_id=123]"
     }
 
-    def 'Test VeracodeCredentials usage'() {
+    def 'Test veracodeSetup usage'() {
         given:
         buildFile << """
             plugins {
                 id 'com.calgaryscientific.gradle.veracode'
             }
 
-            veracodeCredentials {
+            veracodeSetup {
                 username = 'user'
                 password = 'pass'
                 id = 'id'
                 key = 'key'
+                filesToUpload = fileTree(dir: ".", include: "*").getFiles()
             }
-            task verifyProjectVeracodeCredentials {
+            task verify {
                 doLast {
-                    assert project.veracodeCredentials.username == 'user'
-                    assert project.veracodeCredentials.password == 'pass'
-                    assert project.veracodeCredentials.id == 'id'
-                    assert project.veracodeCredentials.key == 'key'
-                    def vc = project.findProperty('veracodeCredentials')
+                    assert project.veracodeSetup.username == 'user'
+                    assert project.veracodeSetup.password == 'pass'
+                    assert project.veracodeSetup.id == 'id'
+                    assert project.veracodeSetup.key == 'key'
+                    def vc = project.findProperty('veracodeSetup')
                     assert vc.key == 'key'
+                    assert vc.filesToUpload == [buildFile] as Set
+                    vc.filesToUpload.add(buildFile)
+                    assert vc.filesToUpload  == [buildFile, buildFile] as Set
+                    vc.filesToUpload.addAll(fileTree(dir: ".", include: "*").getFiles())
+                    assert vc.filesToUpload  == [buildFile, buildFile, buildFile] as Set
                 }
             }
         """
 
         when:
-        def result = GradleBuild('verifyProjectVeracodeCredentials')
+        def result = GradleBuild('verify')
 
         then:
-        result.task(":verifyProjectVeracodeCredentials").outcome == SUCCESS
+        result.task(":verify").outcome == SUCCESS
     }
 
     def 'Test extractModuleIds function'() {
@@ -145,7 +152,26 @@ class VeracodeTaskTest extends Specification {
 
         then:
         assert moduleIds[0] == "789"
+    }
 
+    def 'Test veracodeSetup filesToUpload are properly set'() {
+        given:
+        def project = new ProjectBuilder().build()
+        VeracodeSetup vs = new VeracodeSetup()
+        vs.filesToUpload = project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+
+        when:
+        project.plugins.apply('com.calgaryscientific.gradle.veracode')
+        project.ext.veracodeSetup = vs
+
+        then:
+        VeracodeSetup vsRead = project.findProperty("veracodeSetup") as VeracodeSetup
+        Set<File> expected = [buildFile] as Set
+        assert vsRead.filesToUpload == expected
+        def task = project.tasks.getByName("veracodeUploadFile")
+        assert task.getFileSet() == expected
+        def _ = vsRead.filesToUpload.add(buildFile)
+        assert vsRead.filesToUpload == [buildFile, buildFile] as Set
     }
 
 }
