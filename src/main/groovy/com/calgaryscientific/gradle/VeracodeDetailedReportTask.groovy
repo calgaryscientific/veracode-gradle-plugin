@@ -30,10 +30,15 @@ import org.gradle.api.tasks.OutputFile
 
 class VeracodeDetailedReportTask extends VeracodeTask {
     static final String NAME = 'veracodeDetailedReport'
+    private String build_id
 
     VeracodeDetailedReportTask() {
         description = 'Gets the Veracode Scan Detailed Report based on the given build_id'
         requiredArguments << 'build_id'
+        if (project.hasProperty("build_id")) {
+            build_id = project.findProperty("build_id")
+            defaultOutputFile = new File("${project.buildDir}/veracode", "detailed-report-${build_id}.xml")
+        }
     }
 
     // TODO Review use of annotation.
@@ -41,11 +46,11 @@ class VeracodeDetailedReportTask extends VeracodeTask {
     // If they do return a report then it is not safe to cache the result.
     @OutputFile
     File getOutputFile() {
-        File outputFile = new File("${project.buildDir}/veracode", "detailed-report-${project.build_id}.xml")
+        return defaultOutputFile
     }
 
     void run() {
-        String results = resultsAPI().detailedReport(project.build_id)
+        String results = resultsAPI().detailedReport(build_id)
         File file = getOutputFile()
         writeXml(file, results)
         printf "report file: %s\n", file

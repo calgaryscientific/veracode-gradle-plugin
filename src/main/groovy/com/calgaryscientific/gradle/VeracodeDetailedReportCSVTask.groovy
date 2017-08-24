@@ -31,43 +31,46 @@ import org.gradle.api.tasks.OutputFile
 
 class VeracodeDetailedReportCSVTask extends VeracodeTask {
     static final String NAME = 'veracodeDetailedReportCSV'
+    private String build_id
 
     VeracodeDetailedReportCSVTask() {
         description = 'Gets the Veracode scan results based on the build id passed in and convert it to CSV format'
         requiredArguments << 'build_id'
         dependsOn 'veracodeDetailedReport'
+        if (project.hasProperty("build_id")) {
+            build_id = project.findProperty("build_id")
+            defaultOutputFile = new File("${project.buildDir}/veracode", "detailed-report-${build_id}.csv")
+        }
     }
-
-    VeracodeDetailedReportTask veracodeDetailedReport =  new VeracodeDetailedReportTask()
-
-    @InputFile
-    File inputFile = veracodeDetailedReport.getOutputFile()
 
     // TODO Review use of annotation.
     // It depends on whether or not partial scans return a report.
     // If they do return a report then it is not safe to cache the result.
     @OutputFile
     File getOutputFile() {
-        File outputFile = new File("${project.buildDir}/veracode", "detailed-report-${project.build_id}.csv")
+        return defaultOutputFile
     }
 
     void run() {
+        VeracodeDetailedReportTask veracodeDetailedReport = new VeracodeDetailedReportTask()
+        File inputFile = veracodeDetailedReport.getOutputFile()
+
         File file = getOutputFile()
         file.newWriter()
         file << ["Issue Id",
-                    "Severity",
-                    "Exploit Level",
-                    "CWE Id",
-                    "CWE Name",
-                    "Module",
-                    "Source",
-                    "Source File Path",
-                    "Line",
-                    "Remediation Status",
-                    "Mitigation Status",
-                    "Mitigation Action",
-                    "Mitigation Description",
-                    "Mitigation Date"].join(",") + "\n"
+                 "Severity",
+                 "Exploit Level",
+                 "CWE Id",
+                 "CWE Name",
+                 "Module",
+                 "Source",
+                 "Source File Path",
+                 "Line",
+                 "Remediation Status",
+                 "Mitigation Status",
+                 "Mitigation Action",
+                 "Mitigation Description",
+                 "Mitigation Date"].join(",") + "\n"
 
         readXml(inputFile).severity.each() { severity ->
             severity.category.each() { category ->

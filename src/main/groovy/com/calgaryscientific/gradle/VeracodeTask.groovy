@@ -50,6 +50,7 @@ abstract class VeracodeTask extends DefaultTask {
     ]
 
     File outputFile
+    protected File defaultOutputFile
 
     List<String> requiredArguments = []
     List<String> optionalArguments = []
@@ -64,6 +65,14 @@ abstract class VeracodeTask extends DefaultTask {
     final def vExecute() { if (hasRequiredArguments()) run() }
 
     // === utility methods ===
+    protected void setOutputFile(File file) {
+        defaultOutputFile = file
+    }
+
+    protected File getOutputFile() {
+        return defaultOutputFile
+    }
+
     protected static String correctUsage(String taskName,
                                          List<String> requiredArguments,
                                          List<String> optionalArguments) {

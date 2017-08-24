@@ -62,6 +62,7 @@ class VeracodeTaskTest extends Specification {
         then:
         project.tasks.getByName("veracodeGetAppList") != null
         project.tasks.getByName("veracodeGetBuildList") != null
+        project.tasks.getByName("veracodeDetailedReport") != null
     }
 
     def 'Test build failure when arguments are missing'() {

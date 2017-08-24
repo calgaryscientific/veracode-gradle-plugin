@@ -26,17 +26,32 @@
 
 package com.calgaryscientific.gradle
 
+import org.gradle.api.tasks.OutputFile
+
 class VeracodeDetailedReportPDFTask extends VeracodeTask {
     static final String NAME = 'veracodeDetailedReportPDF'
+    private String build_id
 
     VeracodeDetailedReportPDFTask() {
         description = 'Gets the Veracode Scan Detailed Report PDF based on the given build_id'
         requiredArguments << 'build_id'
+        if (project.hasProperty("build_id")) {
+            build_id = project.findProperty("build_id")
+            defaultOutputFile = new File("${project.buildDir}/veracode", "detailed-report-${build_id}.pdf")
+        }
+    }
+
+    // TODO Review use of annotation.
+    // It depends on whether or not partial scans return a report.
+    // If they do return a report then it is not safe to cache the result.
+    @OutputFile
+    File getOutputFile() {
+        return defaultOutputFile
     }
 
     void run() {
-        String file = "detailed-report-${project.build_id}.pdf"
-        new File(file).bytes = resultsAPI().detailedReportPdf(project.build_id)
+        File file = getOutputFile()
+        file.bytes = resultsAPI().detailedReportPdf(build_id)
         printf "report file: %s\n", file
     }
 }
