@@ -36,34 +36,38 @@ class VeracodePlugin implements Plugin<Project> {
         project.extensions.create('veracodeCredentials', VeracodeCredentials)
 
         // App tasks
-        project.task(VeracodeGetAppListTask.NAME, type: VeracodeGetAppListTask)
-        project.task(VeracodeGetAppInfoTask.NAME, type: VeracodeGetAppInfoTask)
-        project.task(VeracodeGetBuildListTask.NAME, type: VeracodeGetBuildListTask)
-        project.task(VeracodeGetBuildInfoTask.NAME, type: VeracodeGetBuildInfoTask)
-        project.task(VeracodeGetFileListTask.NAME, type: VeracodeGetFileListTask)
+        project.task(VeracodeBeginPreScanTask.NAME, type: VeracodeBeginPreScanTask)
+        project.task(VeracodeBeginScanTask.NAME, type: VeracodeBeginScanTask)
         project.task(VeracodeCreateBuildTask.NAME, type: VeracodeCreateBuildTask)
         project.task(VeracodeDeleteBuildTask.NAME, type: VeracodeDeleteBuildTask)
-        project.task(VeracodeUploadFileTask.NAME, type: VeracodeUploadFileTask)
-        project.task(VeracodeBeginPreScanTask.NAME, type: VeracodeBeginPreScanTask)
+        project.task(VeracodeGetAppInfoTask.NAME, type: VeracodeGetAppInfoTask)
+        project.task(VeracodeGetAppListTask.NAME, type: VeracodeGetAppListTask)
+        project.task(VeracodeGetBuildInfoTask.NAME, type: VeracodeGetBuildInfoTask)
+        project.task(VeracodeGetBuildListTask.NAME, type: VeracodeGetBuildListTask)
+        project.task(VeracodeGetFileListTask.NAME, type: VeracodeGetFileListTask)
         project.task(VeracodeGetPreScanResultsTask.NAME, type: VeracodeGetPreScanResultsTask)
-        project.task(VeracodeBeginScanTask.NAME, type: VeracodeBeginScanTask)
-        project.task(VeracodeDetailedReportTask.NAME, type: VeracodeDetailedReportTask)
-        project.task(VeracodeDetailedReportPDFTask.NAME, type: VeracodeDetailedReportPDFTask)
-        project.task(VeracodeDetailedReportCSVTask.NAME, type: VeracodeDetailedReportCSVTask)
         project.task(VeracodeRemoveFileTask.NAME, type: VeracodeRemoveFileTask)
-        project.task(ReportFlawsByTeamTask.NAME, type: ReportFlawsByTeamTask)
-        project.task(ReportFlawsDiffTask.NAME, type: ReportFlawsDiffTask)
+        project.task(VeracodeUploadFileTask.NAME, type: VeracodeUploadFileTask)
 
         // Sandbox tasks
-        project.task(VeracodeGetFileListSandboxTask.NAME, type: VeracodeGetFileListSandboxTask)
-        project.task(VeracodeGetBuildListSandboxTask.NAME, type: VeracodeGetBuildListSandboxTask)
-        project.task(VeracodeCreateBuildSandboxTask.NAME, type: VeracodeCreateBuildSandboxTask)
-        project.task(VeracodeDeleteBuildSandboxTask.NAME, type: VeracodeDeleteBuildSandboxTask)
         project.task(VeracodeBeginPreScanSandboxTask.NAME, type: VeracodeBeginPreScanSandboxTask)
         project.task(VeracodeBeginScanSandboxTask.NAME, type: VeracodeBeginScanSandboxTask)
-        project.task(VeracodeGetPreScanResultsSandboxTask.NAME, type: VeracodeGetPreScanResultsSandboxTask)
+        project.task(VeracodeCreateBuildSandboxTask.NAME, type: VeracodeCreateBuildSandboxTask)
+        project.task(VeracodeDeleteBuildSandboxTask.NAME, type: VeracodeDeleteBuildSandboxTask)
         project.task(VeracodeGetBuildInfoSandboxTask.NAME, type: VeracodeGetBuildInfoSandboxTask)
+        project.task(VeracodeGetBuildListSandboxTask.NAME, type: VeracodeGetBuildListSandboxTask)
+        project.task(VeracodeGetFileListSandboxTask.NAME, type: VeracodeGetFileListSandboxTask)
+        project.task(VeracodeGetPreScanResultsSandboxTask.NAME, type: VeracodeGetPreScanResultsSandboxTask)
         project.task(VeracodeRemoveFileSandboxTask.NAME, type: VeracodeRemoveFileSandboxTask)
         project.task(VeracodeUploadFileSandboxTask.NAME, type: VeracodeUploadFileSandboxTask)
+
+        // Common tasks
+        project.task(VeracodeDetailedReportTask.NAME, type: VeracodeDetailedReportTask)
+        project.task(VeracodeDetailedReportCSVTask.NAME, type: VeracodeDetailedReportCSVTask)
+        project.task(VeracodeDetailedReportPDFTask.NAME, type: VeracodeDetailedReportPDFTask)
+
+        // TODO: Review these tasks
+        project.task(ReportFlawsByTeamTask.NAME, type: ReportFlawsByTeamTask)
+        project.task(ReportFlawsDiffTask.NAME, type: ReportFlawsDiffTask)
     }
 }
