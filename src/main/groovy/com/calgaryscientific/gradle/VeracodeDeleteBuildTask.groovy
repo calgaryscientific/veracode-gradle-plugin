@@ -38,6 +38,6 @@ class VeracodeDeleteBuildTask extends VeracodeTask {
 
     void run() {
         // TODO: Run clean UploadFileTask after deleting the build
-        writeXml(uploadAPI().deleteBuild(project.app_id))
+        writeXml(outputFile, uploadAPI().deleteBuild(project.app_id))
     }
 }

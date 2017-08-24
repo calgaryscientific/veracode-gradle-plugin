@@ -46,6 +46,7 @@ class VeracodeBeginScanSandboxTask extends VeracodeBeginScan {
         println "Modules found: ${moduleIds.size()}"
         println "Modules found: ${moduleIds.join(",")}"
         Node xml = writeXml(
+                outputFile,
                 uploadAPI().beginScan(
                         project.app_id,
                         moduleIds.join(","),

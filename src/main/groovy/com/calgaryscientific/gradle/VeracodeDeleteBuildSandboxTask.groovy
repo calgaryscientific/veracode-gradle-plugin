@@ -38,6 +38,6 @@ class VeracodeDeleteBuildSandboxTask extends VeracodeTask {
     File outputFile = new File("${project.buildDir}/veracode", 'sandbox-delete-build.xml')
 
     void run() {
-        writeXml(uploadAPI().deleteBuild(project.app_id, project.sandbox_id))
+        writeXml(outputFile, uploadAPI().deleteBuild(project.app_id, project.sandbox_id))
     }
 }

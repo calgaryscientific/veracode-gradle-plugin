@@ -56,7 +56,7 @@ abstract class VeracodeUploadFile extends VeracodeTask {
                     println ''
                     println "Processing ${file.name}"
                     String response = uploadFile(update, file.absolutePath)
-                    Node filelist = writeXml(response)
+                    Node filelist = writeXml(outputFile, response)
                     filelist.each() { fileEntry ->
                         println "${fileEntry.@file_name}=${fileEntry.@file_status}"
                     }

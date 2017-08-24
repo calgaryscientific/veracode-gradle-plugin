@@ -132,15 +132,6 @@ abstract class VeracodeTask extends DefaultTask {
         writeXml(file, content)
     }
 
-    protected Node writeXml(String content) {
-        GFileUtils.writeFile(content, outputFile)
-        Node xml = new XmlParser().parseText(content)
-        if (xml.name() == 'error') {
-            fail("ERROR: ${xml.text()}\nSee ${outputFile} for details!")
-        }
-        xml
-    }
-
     protected Node readXml(File file) {
         new XmlParser().parseText(GFileUtils.readFile(file))
     }
