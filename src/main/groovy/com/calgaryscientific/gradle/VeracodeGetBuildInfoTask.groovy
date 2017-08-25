@@ -47,6 +47,6 @@ class VeracodeGetBuildInfoTask extends VeracodeGetBuildInfo {
         }
         Node buildInfo = writeXml(file, response)
         printf "app_id=%s\n", buildInfo.@app_id
-        VeracodeGetBuildInfo.printNodeInfo(buildInfo)
+        printNodeInfo(buildInfo)
     }
 }

@@ -29,11 +29,13 @@ package com.calgaryscientific.gradle
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 
 abstract class VeracodeUploadFile extends VeracodeTask {
+    abstract File outputFile
 
     abstract Set<File> getFileSet()
+    abstract String uploadFile(UploadAPIWrapper api, String filepath)
+
 
     void upload() {
-        String xmlResponse = ''
         UploadAPIWrapper update = uploadAPI()
         def error
         Integer tries = 1;

@@ -49,6 +49,6 @@ class VeracodeGetBuildInfoSandboxTask extends VeracodeGetBuildInfo {
         Node buildInfo = writeXml(file, response)
         printf "app_id=%s\n", buildInfo.@app_id
         printf "sandbox_id=%s\n", buildInfo.@sandbox_id
-        VeracodeGetBuildInfo.printNodeInfo(buildInfo)
+        printNodeInfo(buildInfo)
     }
 }

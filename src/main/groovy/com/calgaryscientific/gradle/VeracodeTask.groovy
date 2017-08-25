@@ -149,17 +149,6 @@ abstract class VeracodeTask extends DefaultTask {
         readXml(new File("${project.buildDir}/veracode", filename))
     }
 
-    protected List readListFromFile(File file) {
-        def set = new HashSet<String>();
-        file.eachLine { line ->
-            if (set.contains(line)) {
-                println "ERROR: duplicate line: [$line]"
-            }
-            set.add(line)
-        }
-        return new ArrayList<String>(set)
-    }
-
     protected fail(String msg) {
         throw new GradleException(msg)
     }
