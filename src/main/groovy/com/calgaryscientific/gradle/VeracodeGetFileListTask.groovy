@@ -31,7 +31,8 @@ class VeracodeGetFileListTask extends VeracodeTask {
 
     VeracodeGetFileListTask() {
         description = "Lists all files under the latest build for the application id passed in. If a build id is provided, the files under that build will be listed instead"
-        requiredArguments << 'appId' << "buildId${VeracodeTask.OPTIONAL}"
+        requiredArguments << 'appId'
+        optionalArguments << 'buildId'
     }
 
     void run() {
