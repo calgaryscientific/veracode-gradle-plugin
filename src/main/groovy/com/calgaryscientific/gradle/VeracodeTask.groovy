@@ -27,14 +27,14 @@
 package com.calgaryscientific.gradle
 
 import org.gradle.api.DefaultTask
-import org.gradle.api.Project
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 import org.gradle.util.GFileUtils
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
 
 abstract class VeracodeTask extends DefaultTask {
-    final static String OPTIONAL = '-optional'
+    abstract static final String NAME
     final static def validArguments = [
             'appId'            : '123',
             'buildId'          : '123',
@@ -44,12 +44,12 @@ abstract class VeracodeTask extends DefaultTask {
             'fileId'           : '123',
             'mode'             : 'action|actionSummary|verbose',
             'maxUploadAttempts': '123',
-            'fileId'           : 'xxx',
             'buildId1'         : '123',
             'buildId2'         : '123'
     ]
 
-    def requiredArguments = []
+    List<String> requiredArguments = []
+    List<String> optionalArguments = []
 
     VeracodeTask() {
         group = 'Veracode'
@@ -57,37 +57,32 @@ abstract class VeracodeTask extends DefaultTask {
 
     abstract void run()
 
-    final String correctUsage() {
-        StringBuilder sb = new StringBuilder("Example of usage: gradle ${getName()}")
-        requiredArguments.each() {
-            if (!isArgumentOptional(it)) {
-                sb.append(" -P${it}=${validArguments.get(it)}")
-            } else {
-                String originalArgument = it.substring(0, it.length() - OPTIONAL.length())
-                sb.append(" [-P${originalArgument}=${validArguments.get(originalArgument)}]")
-            }
+    protected static String correctUsage(String taskName,
+                                         List<String> requiredArguments,
+                                         List<String> optionalArguments) {
+        StringBuilder sb = new StringBuilder("Missing required arguments: gradle ${taskName}")
+        requiredArguments.each() { arg ->
+            sb.append(" -P${arg}=${validArguments.get(arg)}")
         }
-
+        optionalArguments.each() { arg ->
+            sb.append(" [-P${arg}=${validArguments.get(arg)}]")
+        }
         sb.toString()
     }
 
-    final boolean haveRequiredArguments() {
-        boolean haveRequiredArguments = true
-        requiredArguments.each() {
-            if (!isArgumentOptional(it)) {
-                haveRequiredArguments &= getProject().hasProperty(it)
-            }
+    protected boolean hasRequiredArguments() {
+        boolean hasRequiredArguments = true
+        requiredArguments.each() { arg ->
+            hasRequiredArguments &= getProject().hasProperty(arg)
         }
-
-        if (!haveRequiredArguments) {
-            println correctUsage()
+        if (!hasRequiredArguments) {
+            fail(correctUsage(name, requiredArguments, optionalArguments))
         }
-
-        return haveRequiredArguments
+        return hasRequiredArguments
     }
 
     @TaskAction
-    final def vExecute() { if (haveRequiredArguments()) run() }
+    final def vExecute() { if (hasRequiredArguments()) run() }
 
     // === utility methods ===
     protected boolean isArgumentOptional(String arg) {
@@ -142,5 +137,9 @@ abstract class VeracodeTask extends DefaultTask {
             set.add(line)
         }
         return new ArrayList<String>(set)
+    }
+
+    protected fail(String msg) {
+        throw new GradleException(msg)
     }
 }

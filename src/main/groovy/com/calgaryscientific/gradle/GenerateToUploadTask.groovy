@@ -31,7 +31,8 @@ class GenerateToUploadTask extends VeracodeTask {
 
     GenerateToUploadTask() {
         description = "Grabs all jar files from the dir provided and filter it into a the 'build/to-upload' folder"
-        requiredArguments << 'dir' << "force${VeracodeTask.OPTIONAL}"
+        requiredArguments << 'dir'
+        optionalArguments << 'force'
     }
 
     void run() {
