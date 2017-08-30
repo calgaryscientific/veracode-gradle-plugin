@@ -41,6 +41,7 @@ class VeracodeTaskTest extends Specification {
     final TemporaryFolder testProjectDir = new TemporaryFolder()
     File buildFile
     Boolean debug = true
+    PrintStream stdout = System.out
 
     def setup() {
         buildFile = testProjectDir.newFile('build.gradle')
@@ -53,6 +54,22 @@ class VeracodeTaskTest extends Specification {
                 .withPluginClasspath()
                 .withArguments(tasks)
                 .build()
+    }
+
+    def mockSystemOut() {
+        def os = new ByteArrayOutputStream()
+        System.out = new PrintStream(os)
+        return os
+    }
+
+    def getSystemOut(def os) {
+        def array = os.toByteArray()
+        def is = new ByteArrayInputStream(array)
+        return is
+    }
+
+    def restoreStdout() {
+        System.out = stdout
     }
 
     def 'Test Task Existence'() {
@@ -150,6 +167,27 @@ class VeracodeTaskTest extends Specification {
         assert '123' == VeracodeTask.getNode(xml, 'level1').attribute('level1Attr')
         assert '456' == VeracodeTask.getNode(xml, 'level1', 'level2').attribute('level2Attr')
         assert null == VeracodeTask.getNode(xml, 'level3')
+    }
+
+    def 'Test VeracodeUploadFile printFileUploadStatus'() {
+        given:
+        def os = mockSystemOut()
+        String xmlStr = '''
+<filelist xmlns="something" xmlns:xsi="something" filelist_version="1.1">
+    <file file_id="1" file_md5="d98b6f5ccfce3799e9b60b5d78cc1" file_name="file1" file_status="Uploaded"/>
+    <file file_id="2" file_md5="68a7d8468ca51bc46d5b72d485022" file_name="file2" file_status="Uploaded"/>
+    <file file_id="3" file_md5="2459464ff4bf78dd6f09695069b52" file_name="file3" file_status="Uploaded"/>
+</filelist>
+'''
+        when:
+        XmlParser xmlParser = new XmlParser()
+        Node xml = xmlParser.parseText(xmlStr)
+        VeracodeUploadFile.printFileUploadStatus(xml)
+        def is = getSystemOut(os)
+        restoreStdout()
+
+        then:
+        assert is.readLines() == ['file1=Uploaded', 'file2=Uploaded', 'file3=Uploaded']
     }
 
     def 'Test extractModuleIds function'() {

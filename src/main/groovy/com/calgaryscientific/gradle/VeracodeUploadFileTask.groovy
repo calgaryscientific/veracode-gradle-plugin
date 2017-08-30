@@ -30,31 +30,42 @@ import groovy.io.FileType
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputFile
+import groovy.transform.CompileStatic
 
+@CompileStatic
 class VeracodeUploadFileTask extends VeracodeUploadFile {
     static final String NAME = 'veracodeUploadFile'
+    private String app_id
+    String maxUploadAttempts
 
     VeracodeUploadFileTask() {
         description = "Uploads all files defined in 'filesToUpload' to Veracode based on the given app_id"
         requiredArguments << 'app_id'
         optionalArguments << 'maxUploadAttempts'
+        if (project.hasProperty("app_id")) {
+            app_id = project.findProperty("app_id")
+            maxUploadAttempts = project.findProperty("maxUploadAttempts")
+            defaultOutputFile = new File("${project.buildDir}/veracode", "upload-file-latest.xml")
+        }
     }
 
     @OutputFile
-    File outputFile = new File("${project.buildDir}/veracode", 'upload-file-latest.xml')
+    File getOutputFile() {
+        return defaultOutputFile
+    }
 
     @InputFiles
     Set<File> getFileSet() {
         Set<File> fc
         if (project.hasProperty("veracodeSetup")) {
-            VeracodeSetup veracodeSetup = project.findProperty("veracodeSetup")
+            VeracodeSetup veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
             fc = veracodeSetup.filesToUpload
         }
         return fc
     }
 
-    String uploadFile(UploadAPIWrapper api, String filepath) {
-        return api.uploadFile(project.app_id, filepath)
+    String uploadFile(UploadAPIWrapper api, String filePath) {
+        return api.uploadFile(app_id, filePath)
     }
 
     void run() {

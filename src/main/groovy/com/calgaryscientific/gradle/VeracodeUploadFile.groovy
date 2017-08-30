@@ -27,25 +27,37 @@
 package com.calgaryscientific.gradle
 
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
+import groovy.transform.CompileStatic
 
+@CompileStatic
 abstract class VeracodeUploadFile extends VeracodeTask {
     abstract File outputFile
+    abstract String maxUploadAttempts
 
     abstract Set<File> getFileSet()
+
     abstract String uploadFile(UploadAPIWrapper api, String filepath)
 
+    static void printFileUploadStatus(Node xml) {
+        NodeList fileList = xml.getAt("file") as NodeList
+        for (int i = 0; i < fileList.size(); i++) {
+            Node fileEntry = fileList.get(i) as Node
+            println "${fileEntry.attribute('file_name')}=${fileEntry.attribute('file_status')}"
+        }
+    }
 
     void upload() {
         UploadAPIWrapper update = uploadAPI()
         def error
         Integer tries = 1;
-        Integer maxTries = Integer.parseInt((hasProperty('maxUploadAttempts') ? maxUploadAttempts : '10'))
+        Integer maxTries = Integer.parseInt((getMaxUploadAttempts() != null) ? getMaxUploadAttempts() : '10')
 
         println ''
         if (tries > 1) {
             println "Attempt ${tries}"
         }
         println "Maximum upload attempts = ${maxTries} (0 means keep trying)"
+        println "results file: ${getOutputFile()}"
         println ''
         for (File file : getFileSet()) {
             boolean success = false
@@ -54,10 +66,8 @@ abstract class VeracodeUploadFile extends VeracodeTask {
                     println ''
                     println "Processing ${file.name}"
                     String response = uploadFile(update, file.absolutePath)
-                    Node filelist = writeXml(outputFile, response)
-                    filelist.each() { fileEntry ->
-                        println "${fileEntry.@file_name}=${fileEntry.@file_status}"
-                    }
+                    Node xml = writeXml(getOutputFile(), response)
+                    printFileUploadStatus(xml)
 //                    project.delete file.absolutePath
                     success = true
                 } catch (Exception e) {
