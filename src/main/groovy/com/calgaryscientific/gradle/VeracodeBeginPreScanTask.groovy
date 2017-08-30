@@ -46,7 +46,7 @@ class VeracodeBeginPreScanTask extends VeracodeTask {
         File file = getOutputFile()
         Node xml = writeXml(
                 file,
-                uploadAPI().beginPreScan(project.app_id)
+                uploadAPI().beginPreScan(app_id)
         )
         printf "app_id=%-10s build_id=%-10s version=\"%s\" status=\"%s\"\n",
                 xml.attribute('app_id'),

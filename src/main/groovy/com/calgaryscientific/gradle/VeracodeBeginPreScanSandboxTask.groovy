@@ -26,22 +26,36 @@
 
 package com.calgaryscientific.gradle
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class VeracodeBeginPreScanSandboxTask extends VeracodeTask {
 	static final String NAME = 'veracodeSandboxBeginPreScan'
+	private String app_id
+	private String sandbox_id
 
 	VeracodeBeginPreScanSandboxTask() {
 		group = 'Veracode Sandbox'
 		description = 'Begin Veracode pre-scan for the given application ID and sanbox ID'
 		requiredArguments << 'app_id' << 'sandbox_id'
+		if (project.hasProperty("app_id")) {
+			app_id = project.findProperty("app_id")
+			sandbox_id = project.findProperty("sandbox_id")
+			defaultOutputFile = new File("${project.buildDir}/veracode", "sandbox-begin-pre-scan.xml")
+		}
 	}
 
 	void run() {
 		String file = 'sandbox-begin-pre-scan.xml'
 		Node xml = writeXml(
 			file,
-			uploadAPI().beginPreScan(project.app_id, project.sandbox_id)
+			uploadAPI().beginPreScan(app_id, sandbox_id)
 		)
 		printf "app_id=%-10s sandbox_id=%-10s build_id=%-10s version=\"%s\" status=\"%s\"\n",
-			xml.@app_id, xml.@sandbox_id, xml.@build_id, xml.build.@version, xml.build.analysis_unit.@status
+				xml.attribute('app_id'),
+				xml.attribute('sandbox_id'),
+				xml.attribute('build_id'),
+				getNode(xml, 'build').attribute('version'),
+				getNode(xml, 'build', 'analysis_unit').attribute('status')
 	}
 }
