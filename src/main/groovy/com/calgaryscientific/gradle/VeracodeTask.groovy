@@ -26,6 +26,7 @@
 
 package com.calgaryscientific.gradle
 
+import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
@@ -33,7 +34,7 @@ import org.gradle.util.GFileUtils
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
 
-@groovy.transform.CompileStatic
+@CompileStatic
 abstract class VeracodeTask extends DefaultTask {
     final static Map<String, String> validArguments = [
             'app_id'           : '123',
@@ -147,6 +148,24 @@ abstract class VeracodeTask extends DefaultTask {
 
     protected Node readXml(String filename) {
         readXml(new File("${project.buildDir}/veracode", filename))
+    }
+
+    /**
+     * getNode - Gets the first child node matching the given name.
+     * When more than one name is provided, it will return the first child recursively.
+     */
+    protected Node getNode(Node node, String... name) {
+        return getNode(node, name.toList())
+    }
+
+    protected Node getNode(Node node, List<String> name) {
+        if (name.size() == 1) {
+            return ((NodeList)node.get(name[0])).get(0) as Node
+        } else if (name.size() > 1) {
+            Node tmp = ((NodeList)node.get(name[0])).get(0) as Node
+            return getNode(tmp, name[1..-1])
+        }
+        return null
     }
 
     protected fail(String msg) {
