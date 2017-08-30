@@ -132,6 +132,26 @@ class VeracodeTaskTest extends Specification {
         result.task(":verify").outcome == SUCCESS
     }
 
+    def 'Test getNode method'() {
+        given:
+        String xmlStr = '''
+<root xmlns="something" xmlns:xsi="something" rootAttr1="123" rootAttr2="456">
+    <level1 level1Attr="123">
+        <level2 level2Attr="456">
+        </level2>
+    </level1>
+</root>
+'''
+        when:
+        XmlParser xmlParser = new XmlParser()
+        Node xml = xmlParser.parseText(xmlStr)
+
+        then:
+        assert '123' == VeracodeTask.getNode(xml, 'level1').attribute('level1Attr')
+        assert '456' == VeracodeTask.getNode(xml, 'level1', 'level2').attribute('level2Attr')
+        assert null == VeracodeTask.getNode(xml, 'level3')
+    }
+
     def 'Test extractModuleIds function'() {
         given:
         String xmlStr = '''

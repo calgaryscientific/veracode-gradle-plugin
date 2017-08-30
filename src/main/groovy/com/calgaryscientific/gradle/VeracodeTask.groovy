@@ -154,16 +154,26 @@ abstract class VeracodeTask extends DefaultTask {
      * getNode - Gets the first child node matching the given name.
      * When more than one name is provided, it will return the first child recursively.
      */
-    protected Node getNode(Node node, String... name) {
+    protected static Node getNode(Node node, String... name) {
         return getNode(node, name.toList())
     }
 
-    protected Node getNode(Node node, List<String> name) {
+    protected static Node getNode(Node node, List<String> name) {
         if (name.size() == 1) {
-            return ((NodeList)node.get(name[0])).get(0) as Node
+            NodeList nodeList = node.get(name[0]) as NodeList
+            if (nodeList.size() >= 1) {
+                return nodeList.get(0) as Node
+            } else {
+                return null
+            }
         } else if (name.size() > 1) {
-            Node tmp = ((NodeList)node.get(name[0])).get(0) as Node
-            return getNode(tmp, name[1..-1])
+            NodeList nodeList = node.get(name[0]) as NodeList
+            if (nodeList.size() >= 1) {
+                Node subNode = nodeList.get(0) as Node
+                return getNode(subNode, name[1..-1])
+            } else {
+                return null
+            }
         }
         return null
     }
