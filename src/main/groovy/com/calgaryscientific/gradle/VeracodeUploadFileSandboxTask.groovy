@@ -41,7 +41,7 @@ class VeracodeUploadFileSandboxTask extends VeracodeTask {
         group = 'Veracode Sandbox'
         description = "Uploads all files defined in 'sandboxFilesToUpload' to Veracode based on the given 'app_id' and 'sandbox_id'. Use the 'delete=true' property to delete uploaded files"
         requiredArguments << 'app_id' << 'sandbox_id'
-        optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts'
+        optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts' << 'delete'
         app_id = project.findProperty("app_id")
         sandbox_id = project.findProperty("sandbox_id")
         maxUploadAttempts = project.findProperty("maxUploadAttempts")

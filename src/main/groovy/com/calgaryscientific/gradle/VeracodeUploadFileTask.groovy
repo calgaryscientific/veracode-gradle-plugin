@@ -40,7 +40,7 @@ class VeracodeUploadFileTask extends VeracodeTask {
     VeracodeUploadFileTask() {
         description = "Uploads all files defined in 'filesToUpload' to Veracode based on the given 'app_id'. Use the 'delete=true' property to delete uploaded files"
         requiredArguments << 'app_id'
-        optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts'
+        optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts' << 'delete'
         app_id = project.findProperty("app_id")
         maxUploadAttempts = project.findProperty("maxUploadAttempts")
         waitTimeBetweenAttempts = project.findProperty("waitTimeBetweenAttempts")

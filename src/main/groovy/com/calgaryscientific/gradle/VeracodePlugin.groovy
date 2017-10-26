@@ -34,6 +34,10 @@ class VeracodePlugin implements Plugin<Project> {
     void apply(Project project) {
         project.extensions.create('veracodeSetup', VeracodeSetup)
 
+        // Main tasks
+        project.task(VeracodeWorkflowTask.NAME, type: VeracodeWorkflowTask)
+        project.task(VeracodeWorkflowSandboxTask.NAME, type: VeracodeWorkflowSandboxTask)
+
         // App tasks
         project.task(VeracodeBeginPreScanTask.NAME, type: VeracodeBeginPreScanTask)
         project.task(VeracodeBeginScanTask.NAME, type: VeracodeBeginScanTask)

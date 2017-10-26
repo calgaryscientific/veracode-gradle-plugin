@@ -26,22 +26,62 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeBeginScanSandboxTest extends TestCommonSetup {
+class VeracodeWorkflowSandboxTest extends TestCommonSetup {
+    // Status after just creating a new build
+    File buildInfoFileIncomplete = getResource('buildinfo-1.4-incomplete.xml')
+    // Status after Scan submitted
     File buildInfoFile = getResource('buildinfo-1.4.xml')
+    // Status after pre scan is completed
+    File buildInfoFilePreScanSuccess = getResource('buildinfo-1.4-preScanSuccess.xml')
+    // Status after scan completed
+    File buildInfoFileResultsReady = getResource('buildinfo-1.4-complete.xml')
+
+    File filelistFile = getResource('filelist-1.1.xml')
     File preScanResultsFile = getResource('prescanresults-1.4.xml')
 
-    def 'Test veracodeSandboxBeginScan Task'() {
+    def 'Test veracodeSandboxWorkflow Task'() {
         given:
-        def os = mockSystemOut()
-        def task = taskSetup('veracodeSandboxBeginScan')
+        def task = taskSetup('veracodeSandboxWorkflow')
+
         task.project.ext.app_id = "123"
         task.project.ext.sandbox_id = "456"
-        task.project.veracodeSetup.moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
+        task.project.ext.build_version = "new-build"
+        task.project.ext.maxUploadAttempts = "1"
+        task.project.ext.waitTimeBetweenAttempts = "0"
+        task.project.veracodeSetup.sandboxFilesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
 
         when:
         task.run()
-        def is = getSystemOut(os)
-        restoreStdout()
+
+        then:
+        2 * task.veracodeAPI.getBuildInfoSandbox(_) >> {
+            return new String(buildInfoFileResultsReady.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.createBuildSandbox('new-build') >> {
+            return new String(buildInfoFileIncomplete.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.getBuildInfoSandbox(_) >> {
+            return new String(buildInfoFileIncomplete.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.uploadFileSandbox(_) >> {
+            return new String(filelistFile.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.beginPreScanSandbox() >> {
+            return new String(buildInfoFile.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.getBuildInfoSandbox(_) >> {
+            return new String(buildInfoFilePreScanSuccess.readBytes())
+        }
 
         then:
         1 * task.veracodeAPI.getPreScanResultsSandbox(_) >> {
@@ -52,21 +92,5 @@ class VeracodeBeginScanSandboxTest extends TestCommonSetup {
         1 * task.veracodeAPI.beginScanSandbox(_) >> {
             return new String(buildInfoFile.readBytes())
         }
-
-        // Get Pre-Scan results output
-        assert is.readLine() == 'id=4 name="goodLib.jar" status="Supporting Files Compiled without Debug Symbols - X Files, PDB Files Missing - X Files"'
-        assert is.readLine() == 'id=5 name="class1.jar" status="OK"'
-        assert is.readLine() == 'id=6 name="badLib.dll" status="(Fatal)PDB Files Missing - 1 File"'
-        assert is.readLine() == 'id=7 name="class2.jar" status="OK"'
-        assert is.readLine() =~ 'report file: '
-
-        // Begin Scan output
-        assert is.readLine() == 'Selecting module: 5: class1.jar - OK'
-        assert is.readLine() == 'Selecting module: 7: class2.jar - OK'
-        assert is.readLine() == 'WARNING: Missing whitelist modules: [class3.jar]'
-        assert is.readLine() == 'Module IDs: 5,7'
-        assert is.readLine() == '[build]'
-        assert is.readLine() == 'build_id=2'
     }
-
 }

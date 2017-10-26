@@ -46,6 +46,11 @@ class VeracodeGetBuildInfoTask extends VeracodeTask {
         }
     }
 
+    String getBuildStatus() {
+        Node buildInfo = XMLIO.writeXml(getOutputFile(), veracodeAPI.getBuildInfo(build_id))
+        return VeracodeBuildInfo.getBuildStatus(buildInfo)
+    }
+
     void run() {
         Node buildInfo = XMLIO.writeXml(getOutputFile(), veracodeAPI.getBuildInfo(build_id))
         VeracodeBuildInfo.printBuildInfo(buildInfo)

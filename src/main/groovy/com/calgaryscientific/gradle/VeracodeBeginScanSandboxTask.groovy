@@ -36,21 +36,24 @@ class VeracodeBeginScanSandboxTask extends VeracodeTask {
         group = 'Veracode Sandbox'
         description = "Begin a Veracode Scan for the given 'app_id' and 'sandbox_id'"
         requiredArguments << 'app_id' << 'sandbox_id'
-        dependsOn "veracodeSandboxGetPreScanResults"
         app_id = project.findProperty("app_id")
         sandbox_id = project.findProperty("sandbox_id")
         defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-${sandbox_id}-latest.xml")
     }
 
-    VeracodeGetPreScanResultsSandboxTask preScan = new VeracodeGetPreScanResultsSandboxTask()
-    File preScanResultsOutputFile = preScan.getOutputFile()
+    VeracodeGetPreScanResultsSandboxTask getPreScanResultsSandboxTask = new VeracodeGetPreScanResultsSandboxTask()
 
     Set<String> getModuleWhitelist() {
         veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
         return veracodeSetup.moduleWhitelist
     }
+
     void run() {
-        Set<String> moduleIds = VeracodePreScanResults.extractWhitelistModuleIds(XMLIO.readXml(preScanResultsOutputFile), getModuleWhitelist())
+        getPreScanResultsSandboxTask.app_id = app_id
+        getPreScanResultsSandboxTask.sandbox_id = sandbox_id
+        getPreScanResultsSandboxTask.veracodeAPI = veracodeAPI
+        getPreScanResultsSandboxTask.run()
+        Set<String> moduleIds = VeracodePreScanResults.extractWhitelistModuleIds(XMLIO.readXml(getPreScanResultsSandboxTask.getOutputFile()), getModuleWhitelist())
         println "Module IDs: " + moduleIds.join(",")
         Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginScanSandbox(moduleIds))
         VeracodeBuildInfo.printBuildInfo(xml)
