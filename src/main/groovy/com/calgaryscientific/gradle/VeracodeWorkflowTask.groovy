@@ -39,7 +39,6 @@ class VeracodeWorkflowTask extends VeracodeTask {
     VeracodeWorkflowTask() {
         description = "Run through the Veracode Workflow for the given 'app_id' using 'build_version' as the build identifier"
         requiredArguments << 'app_id' << 'build_version'
-        dependsOn 'veracodeGetBuildInfo'
         app_id = project.findProperty("app_id")
         build_version = project.findProperty("build_version")
     }
