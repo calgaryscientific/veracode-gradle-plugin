@@ -36,7 +36,10 @@ class VeracodeBeginPreScanTask extends VeracodeTask {
         description = "Begin a Veracode Pre-Scan for the given 'app_id'"
         requiredArguments << 'app_id'
         app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-latest.xml")
+    }
+
+    File getOutputFile() {
+        VeracodeBuildInfo.getFile("${project.buildDir}/veracode", app_id, null)
     }
 
     void run() {

@@ -47,12 +47,11 @@ class VeracodeUploadFileSandboxTask extends VeracodeTask {
         maxUploadAttempts = project.findProperty("maxUploadAttempts")
         waitTimeBetweenAttempts = project.findProperty("waitTimeBetweenAttempts")
         delete = project.findProperty("delete")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "filelist-${app_id}-${sandbox_id}-latest.xml")
     }
 
     @OutputFile
     File getOutputFile() {
-        return defaultOutputFile
+        VeracodeFileList.getSandboxFile("${project.buildDir}/veracode", app_id, sandbox_id, null)
     }
 
     @InputFiles

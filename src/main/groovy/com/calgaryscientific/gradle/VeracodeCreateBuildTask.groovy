@@ -38,7 +38,10 @@ class VeracodeCreateBuildTask extends VeracodeTask {
         requiredArguments << 'app_id' << 'build_version'
         app_id = project.findProperty("app_id")
         build_version = project.findProperty("build_version")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-latest.xml")
+    }
+
+    File getOutputFile() {
+        VeracodeBuildInfo.getFile("${project.buildDir}/veracode", app_id, null)
     }
 
     void run() {

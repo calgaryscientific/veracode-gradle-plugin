@@ -40,7 +40,10 @@ class VeracodeRemoveFileSandboxTask extends VeracodeTask {
         app_id = project.findProperty("app_id")
         sandbox_id = project.findProperty("sandbox_id")
         file_id = project.findProperty("file_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "filelist-${app_id}-${sandbox_id}.xml")
+    }
+
+    File getOutputFile() {
+        VeracodeFileList.getSandboxFile("${project.buildDir}/veracode", app_id, sandbox_id, null)
     }
 
     void run() {

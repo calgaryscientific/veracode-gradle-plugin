@@ -42,10 +42,7 @@ class VeracodeGetPreScanResultsTask extends VeracodeTask {
     }
 
     File getOutputFile() {
-        if (build_id) {
-            return new File("${project.buildDir}/veracode", "prescanresults-${app_id}-${build_id}.xml")
-        }
-        return new File("${project.buildDir}/veracode", "prescanresults-${app_id}-latest.xml")
+        VeracodePreScanResults.getFile("${project.buildDir}/veracode", app_id, build_id)
     }
 
     void run() {

@@ -38,7 +38,10 @@ class VeracodeRemoveFileTask extends VeracodeTask {
         requiredArguments << 'app_id' << 'file_id'
         app_id = project.findProperty("app_id")
         file_id = project.findProperty("file_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "filelist-${app_id}.xml")
+    }
+
+    File getOutputFile() {
+        VeracodeFileList.getFile("${project.buildDir}/veracode", app_id, null)
     }
 
     void run() {

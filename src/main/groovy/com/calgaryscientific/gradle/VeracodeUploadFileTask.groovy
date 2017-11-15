@@ -45,12 +45,11 @@ class VeracodeUploadFileTask extends VeracodeTask {
         maxUploadAttempts = project.findProperty("maxUploadAttempts")
         waitTimeBetweenAttempts = project.findProperty("waitTimeBetweenAttempts")
         delete = project.findProperty("delete")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "filelist-${app_id}-latest.xml")
     }
 
     @OutputFile
     File getOutputFile() {
-        return defaultOutputFile
+        VeracodeFileList.getFile("${project.buildDir}/veracode", app_id, null)
     }
 
     @InputFiles

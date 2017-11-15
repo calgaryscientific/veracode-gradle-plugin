@@ -40,7 +40,10 @@ class VeracodeCreateBuildSandboxTask extends VeracodeTask {
         app_id = project.findProperty("app_id")
         sandbox_id = project.findProperty("sandbox_id")
         build_version = project.findProperty("build_version")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-${sandbox_id}-latest.xml")
+    }
+
+    File getOutputFile() {
+        VeracodeBuildInfo.getSandboxFile("${project.buildDir}/veracode", app_id, sandbox_id, null)
     }
 
     void run() {
