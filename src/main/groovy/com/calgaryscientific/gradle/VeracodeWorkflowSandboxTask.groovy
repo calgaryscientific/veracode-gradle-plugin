@@ -35,91 +35,61 @@ class VeracodeWorkflowSandboxTask extends VeracodeTask {
     String maxUploadAttempts
     String waitTimeBetweenAttempts
     String delete
+    String ignoreFailure
 
     VeracodeWorkflowSandboxTask() {
         group = 'Veracode Sandbox'
         description = "Run through the Veracode Workflow for the given 'app_id' and 'sandbox_id' using 'build_version' as the build identifier"
         requiredArguments << 'app_id' << 'sandbox_id' << 'build_version'
-        optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts' << 'delete'
-        app_id = project.findProperty("app_id")
-        sandbox_id = project.findProperty("sandbox_id")
-        build_version = project.findProperty("build_version")
-    }
-
-    VeracodeGetBuildInfoSandboxTask buildInfoSandboxTask = new VeracodeGetBuildInfoSandboxTask()
-    VeracodeCreateBuildSandboxTask createBuildSandboxTask = new VeracodeCreateBuildSandboxTask()
-    VeracodeUploadFileSandboxTask uploadFileSandboxTask = new VeracodeUploadFileSandboxTask()
-    VeracodeBeginPreScanSandboxTask beginPreScanSandboxTask = new VeracodeBeginPreScanSandboxTask()
-    VeracodeBeginScanSandboxTask beginScanSandboxTask = new VeracodeBeginScanSandboxTask()
-
-    void run() {
-        // Retrieve the properties in the run method to allow for testing
-        // TODO: Look for a better way
+        optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts' << 'delete' << 'ignoreFailure'
         app_id = project.findProperty("app_id")
         sandbox_id = project.findProperty("sandbox_id")
         build_version = project.findProperty("build_version")
         maxUploadAttempts = project.findProperty("maxUploadAttempts")
         waitTimeBetweenAttempts = project.findProperty("waitTimeBetweenAttempts")
         delete = project.findProperty("delete")
-        println "[debug] app_id: ${app_id}"
-        println "[debug] sandbox_id: ${sandbox_id}"
-        println "[debug] build_version: ${build_version}"
+        ignoreFailure = project.findProperty("ignoreFailure")
+    }
 
-        // Apply default properties to tasks
-        buildInfoSandboxTask.app_id = app_id
-        buildInfoSandboxTask.sandbox_id = sandbox_id
-        buildInfoSandboxTask.veracodeAPI = veracodeAPI
+    Set<File> getFileSet() {
+        veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
+        return veracodeSetup.sandboxFilesToUpload
+    }
 
-        createBuildSandboxTask.app_id = app_id
-        createBuildSandboxTask.sandbox_id = sandbox_id
-        createBuildSandboxTask.build_version = build_version
-        createBuildSandboxTask.veracodeAPI = veracodeAPI
+    Set<String> getModuleWhitelist() {
+        veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
+        return veracodeSetup.moduleWhitelist
+    }
 
-        uploadFileSandboxTask.app_id = app_id
-        uploadFileSandboxTask.sandbox_id = sandbox_id
-        uploadFileSandboxTask.maxUploadAttempts = maxUploadAttempts
-        uploadFileSandboxTask.waitTimeBetweenAttempts = waitTimeBetweenAttempts
-        uploadFileSandboxTask.delete = delete
-        uploadFileSandboxTask.veracodeAPI = veracodeAPI
-
-        beginPreScanSandboxTask.app_id = app_id
-        beginPreScanSandboxTask.sandbox_id = sandbox_id
-        beginPreScanSandboxTask.veracodeAPI = veracodeAPI
-
-        beginScanSandboxTask.app_id = app_id
-        beginScanSandboxTask.sandbox_id = sandbox_id
-        beginScanSandboxTask.veracodeAPI = veracodeAPI
-
-        // Get build info
-        printf "[debug] getBuildInfo\n"
-        buildInfoSandboxTask.run()
-
-        // Save to variable to do the API call only once
-        String buildStatus = buildInfoSandboxTask.getBuildStatus()
-        printf "[debug] buildStatus: %s\n", buildStatus
-
-        // Done previous work
-        if (buildStatus == "Results Ready") {
-            printf "[debug] createBuild\n"
-            createBuildSandboxTask.run()
-            buildStatus = buildInfoSandboxTask.getBuildStatus()
-            printf "[debug] buildStatus: %s\n", buildStatus
+    void run() {
+        Integer maxTries = Integer.parseInt((maxUploadAttempts != null) ? maxUploadAttempts : '10')
+        Integer waitTime = Integer.parseInt((waitTimeBetweenAttempts != null) ? waitTimeBetweenAttempts : '5000')
+        Boolean deleteBool = false
+        if (delete == "true") {
+            deleteBool = true
+        }
+        Boolean ignoreFailureBool = false
+        if (ignoreFailure == "true") {
+            ignoreFailureBool = true
         }
 
-        // Clean build or with some uploaded files
-        if (buildStatus == "Incomplete") {
-            printf "[debug] uploadFile\n"
-            uploadFileSandboxTask.run()
-            printf "[debug] beginPreScan\n"
-            beginPreScanSandboxTask.run()
-            buildStatus = buildInfoSandboxTask.getBuildStatus()
-            printf "[debug] buildStatus: %s\n", buildStatus
-        }
-
-        // Pre-Scan completed
-        if (buildStatus == "Pre-Scan Success") {
-            printf "[debug] begin scan\n"
-            beginScanSandboxTask.run()
+        try {
+            VeracodeWorkflow.sandboxWorkflow(veracodeAPI,
+                    "${project.buildDir}/veracode",
+                    app_id,
+                    sandbox_id,
+                    build_version,
+                    getFileSet(),
+                    getModuleWhitelist(),
+                    maxTries,
+                    waitTime,
+                    deleteBool)
+        } catch (Exception e) {
+            if (ignoreFailureBool) {
+                println e.getMessage()
+            } else {
+                throw e
+            }
         }
     }
 }

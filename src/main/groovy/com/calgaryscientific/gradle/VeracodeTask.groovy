@@ -58,6 +58,7 @@ abstract class VeracodeTask extends DefaultTask {
             'maxUploadAttempts'      : '123',
             'waitTimeBetweenAttempts': '123',
             'delete'                 : 'true',
+            'ignoreFailure'          : 'true',
     ]
 
     VeracodeTask() {

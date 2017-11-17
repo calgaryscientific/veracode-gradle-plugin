@@ -34,7 +34,7 @@ class VeracodeBeginScanTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeBeginScan')
-        task.project.ext.app_id = "123"
+        task.app_id = "123"
         task.project.veracodeSetup.moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
 
         when:

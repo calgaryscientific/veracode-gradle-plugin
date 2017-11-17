@@ -26,9 +26,7 @@
 
 package com.calgaryscientific.gradle
 
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
-import org.junit.rules.TemporaryFolder
+import org.gradle.api.GradleException
 
 class VeracodeWorkflowTest extends TestCommonSetup {
     // Status after just creating a new build
@@ -43,32 +41,33 @@ class VeracodeWorkflowTest extends TestCommonSetup {
     File filelistFile = getResource('filelist-1.1.xml')
     File preScanResultsFile = getResource('prescanresults-1.4.xml')
 
+    String errorXMLResponse = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<error>Veracode API Error</error>
+'''
+
     def 'Test veracodeWorkflow Task'() {
         given:
         def task = taskSetup('veracodeWorkflow')
 
-        task.project.ext.app_id = "123"
-        task.project.ext._id = "456"
-        task.project.ext.build_version = "new-build"
-        task.project.ext.maxUploadAttempts = "1"
-        task.project.ext.waitTimeBetweenAttempts = "0"
+        task.app_id = "123"
+        task.build_version = "new-build"
+        task.maxUploadAttempts = "1"
+        task.waitTimeBetweenAttempts = "0"
+        task.delete = "false"
+        task.ignoreFailure = "false"
         task.project.veracodeSetup.filesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+        task.project.veracodeSetup.moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
 
         when:
         task.run()
 
         then:
-        2 * task.veracodeAPI.getBuildInfo(_) >> {
+        1 * task.veracodeAPI.getBuildInfo(_) >> {
             return new String(buildInfoFileResultsReady.readBytes())
         }
 
         then:
         1 * task.veracodeAPI.createBuild('new-build') >> {
-            return new String(buildInfoFileIncomplete.readBytes())
-        }
-
-        then:
-        1 * task.veracodeAPI.getBuildInfo(_) >> {
             return new String(buildInfoFileIncomplete.readBytes())
         }
 
@@ -79,11 +78,6 @@ class VeracodeWorkflowTest extends TestCommonSetup {
 
         then:
         1 * task.veracodeAPI.beginPreScan() >> {
-            return new String(buildInfoFile.readBytes())
-        }
-
-        then:
-        1 * task.veracodeAPI.getBuildInfo(_) >> {
             return new String(buildInfoFilePreScanSuccess.readBytes())
         }
 
@@ -96,5 +90,39 @@ class VeracodeWorkflowTest extends TestCommonSetup {
         1 * task.veracodeAPI.beginScan(_) >> {
             return new String(buildInfoFile.readBytes())
         }
+    }
+
+    def 'Test veracodeWorkflow Task failure'() {
+        given:
+        def task = taskSetup('veracodeWorkflow')
+        task.ignoreFailure = "false"
+
+        when:
+        task.run()
+
+        then:
+        1 * task.veracodeAPI.getBuildInfo(_) >> {
+            return errorXMLResponse
+        }
+        def e = thrown(GradleException)
+        e.toString().contains("ERROR: Veracode API Error")
+    }
+
+    def 'Test veracodeWorkflow ignore Task failure'() {
+        given:
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeWorkflow')
+        task.ignoreFailure = "true"
+
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
+
+        then:
+        1 * task.veracodeAPI.getBuildInfo(_) >> {
+            return errorXMLResponse
+        }
+        assert is.readLine() =~ "ERROR: Veracode API Error"
     }
 }
