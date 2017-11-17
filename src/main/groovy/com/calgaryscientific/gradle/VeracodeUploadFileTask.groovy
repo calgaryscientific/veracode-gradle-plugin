@@ -61,13 +61,11 @@ class VeracodeUploadFileTask extends VeracodeTask {
     void run() {
         Integer maxTries = Integer.parseInt((this.maxUploadAttempts != null) ? this.maxUploadAttempts : '10')
         Integer waitTime = Integer.parseInt((this.waitTimeBetweenAttempts != null) ? this.waitTimeBetweenAttempts : '5000')
-        getFileSet().each { file ->
-            VeracodeUploadFile.uploadFile(file, maxTries, waitTime, veracodeAPI, getOutputFile(), false)
-            if (delete == "true") {
-                println("Deleting ${file}")
-                file.delete()
-            }
+        Boolean deleteBool = false
+        if (delete == "true") {
+            deleteBool = true
         }
+        VeracodeUploadFile.uploadAppFiles(veracodeAPI, getOutputFile(), getFileSet(), maxTries, waitTime, deleteBool)
         println "results file: ${getOutputFile()}"
     }
 }
