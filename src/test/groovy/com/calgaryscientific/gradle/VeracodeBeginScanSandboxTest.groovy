@@ -58,7 +58,6 @@ class VeracodeBeginScanSandboxTest extends TestCommonSetup {
         assert is.readLine() == 'id=5 name="class1.jar" status="OK"'
         assert is.readLine() == 'id=6 name="badLib.dll" status="(Fatal)PDB Files Missing - 1 File"'
         assert is.readLine() == 'id=7 name="class2.jar" status="OK"'
-        assert is.readLine() =~ 'report file: '
 
         // Begin Scan output
         assert is.readLine() == 'Selecting module: 5: class1.jar - OK'

@@ -42,18 +42,15 @@ class VeracodeBeginScanTask extends VeracodeTask {
         VeracodeBuildInfo.getFile("${project.buildDir}/veracode", app_id, null)
     }
 
-    VeracodeGetPreScanResultsTask getPreScanResultsTask = new VeracodeGetPreScanResultsTask()
-
     Set<String> getModuleWhitelist() {
         veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
         return veracodeSetup.moduleWhitelist
     }
 
     void run() {
-        getPreScanResultsTask.app_id = app_id
-        getPreScanResultsTask.veracodeAPI = veracodeAPI
-        getPreScanResultsTask.run()
-        Set<String> moduleIds = VeracodePreScanResults.extractWhitelistModuleIds(XMLIO.readXml(getPreScanResultsTask.getOutputFile()), getModuleWhitelist())
+        Node preScanResultsXML = XMLIO.writeXml(VeracodePreScanResults.getFile("${project.buildDir}/veracode", app_id, null), veracodeAPI.getPreScanResults(null))
+        VeracodePreScanResults.printModuleStatus(preScanResultsXML)
+        Set<String> moduleIds = VeracodePreScanResults.extractWhitelistModuleIds(preScanResultsXML, getModuleWhitelist())
         println "Module IDs: " + moduleIds.join(",")
         Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginScan(moduleIds))
         VeracodeBuildInfo.printBuildInfo(xml)
