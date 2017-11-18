@@ -71,6 +71,42 @@ Optionally, the Veracode credentials properties can be placed in the `~/.gradle/
 
 * Execute `gradle tasks` to see available tasks.
 
+== Work flow tasks (CI environment)
+
+The full work flow tasks are meant to be used in a CI environment.
+
+A single task will do the following:
+
+* _Query the status_ of the latest build:
+  - If the latest build scan is complete:
+    * _Creates a new build_.
+    * _Uploads the given files_ to the Veracode platform.
+    * _Begins a Pre-Scan_ of the uploaded files.
+
+  - If the latest build scan has a completed pre-scan:
+    * _Begins the Scan_ of the application selecting the given white list modules.
+
+  - If the pre-scan or Scan is in progress:
+    * Doesn't run any steps.
+
+A sample configuration looks like this:
+
+[source,groovy]
+----
+task veracodeBuildWorkflow(type: com.calgaryscientific.gradle.VeracodeWorkflowTask) {
+    dependsOn buildMyApplication
+    project.ext.build_version =  "build-name-if-creating-a-new-build"
+    doFirst {
+        veracodeSetup {
+            filesToUpload = fileTree(dir: "upload/", include: "*").getFiles() <1>
+        }
+    }
+}
+----
+<1> Setup `veracodeSetup` `filesToUpload` again to ensure it is evaluated after the `buildMyApplication` task.
+
+This task can be triggered by every commit and will only create a new build, upload files, begin pre-scans or begin scans when the Veracode platform is ready for it.
+
 == Compatibility
 
 Tested with the Java API version: `VeracodeJavaAPI v17.6.4.4 c201706231537`

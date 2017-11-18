@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<buildinfo xmlns="https://analysiscenter.veracode.com/schema/4.0/buildinfo"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           account_id="0" app_id="1" build_id="2"
+           buildinfo_version="1.4"
+           xsi:schemaLocation="https://analysiscenter.veracode.com/schema/4.0/buildinfo
+            https://analysiscenter.veracode.com/resource/4.0/buildinfo.xsd">
+    <build build_id="2" grace_period_expired="false" legacy_scan_engine="false"
+           scan_overdue="false" submitter="CalgaryScientific" version="CSI-001">
+        <analysis_unit analysis_type="Static" engine_version="115614" status="Pre-Scan Success"/>
+    </build>
+</buildinfo>

@@ -34,7 +34,8 @@ class VeracodeBeginScanSandboxTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeSandboxBeginScan')
-        task.preScanResultsOutputFile = preScanResultsFile
+        task.app_id = "123"
+        task.sandbox_id = "456"
         task.project.veracodeSetup.moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
 
         when:
@@ -43,9 +44,22 @@ class VeracodeBeginScanSandboxTest extends TestCommonSetup {
         restoreStdout()
 
         then:
+        1 * task.veracodeAPI.getPreScanResultsSandbox(_) >> {
+            return new String(preScanResultsFile.readBytes())
+        }
+
+        then:
         1 * task.veracodeAPI.beginScanSandbox(_) >> {
             return new String(buildInfoFile.readBytes())
         }
+
+        // Get Pre-Scan results output
+        assert is.readLine() == 'id=4 name="goodLib.jar" status="Supporting Files Compiled without Debug Symbols - X Files, PDB Files Missing - X Files"'
+        assert is.readLine() == 'id=5 name="class1.jar" status="OK"'
+        assert is.readLine() == 'id=6 name="badLib.dll" status="(Fatal)PDB Files Missing - 1 File"'
+        assert is.readLine() == 'id=7 name="class2.jar" status="OK"'
+
+        // Begin Scan output
         assert is.readLine() == 'Selecting module: 5: class1.jar - OK'
         assert is.readLine() == 'Selecting module: 7: class2.jar - OK'
         assert is.readLine() == 'WARNING: Missing whitelist modules: [class3.jar]'

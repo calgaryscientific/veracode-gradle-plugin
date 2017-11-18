@@ -31,14 +31,17 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class VeracodeCreateBuildTask extends VeracodeTask {
     static final String NAME = 'veracodeCreateBuild'
-    private String build_version
+    String build_version
 
     VeracodeCreateBuildTask() {
         description = "Create a Veracode Build for the given 'app_id' using 'build_version' as the identifier"
         requiredArguments << 'app_id' << 'build_version'
         app_id = project.findProperty("app_id")
         build_version = project.findProperty("build_version")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-latest.xml")
+    }
+
+    File getOutputFile() {
+        VeracodeBuildInfo.getFile("${project.buildDir}/veracode", app_id, null)
     }
 
     void run() {

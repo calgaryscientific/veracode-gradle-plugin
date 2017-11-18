@@ -40,17 +40,16 @@ class VeracodeUploadFileTask extends VeracodeTask {
     VeracodeUploadFileTask() {
         description = "Uploads all files defined in 'filesToUpload' to Veracode based on the given 'app_id'. Use the 'delete=true' property to delete uploaded files"
         requiredArguments << 'app_id'
-        optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts'
+        optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts' << 'delete'
         app_id = project.findProperty("app_id")
         maxUploadAttempts = project.findProperty("maxUploadAttempts")
         waitTimeBetweenAttempts = project.findProperty("waitTimeBetweenAttempts")
         delete = project.findProperty("delete")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "filelist-${app_id}-latest.xml")
     }
 
     @OutputFile
     File getOutputFile() {
-        return defaultOutputFile
+        VeracodeFileList.getFile("${project.buildDir}/veracode", app_id, null)
     }
 
     @InputFiles
@@ -62,13 +61,11 @@ class VeracodeUploadFileTask extends VeracodeTask {
     void run() {
         Integer maxTries = Integer.parseInt((this.maxUploadAttempts != null) ? this.maxUploadAttempts : '10')
         Integer waitTime = Integer.parseInt((this.waitTimeBetweenAttempts != null) ? this.waitTimeBetweenAttempts : '5000')
-        getFileSet().each { file ->
-            VeracodeUploadFile.uploadFile(file, maxTries, waitTime, veracodeAPI, getOutputFile(), false)
-            if (delete == "true") {
-                println("Deleting ${file}")
-                file.delete()
-            }
+        Boolean deleteBool = false
+        if (delete == "true") {
+            deleteBool = true
         }
+        VeracodeUploadFile.uploadAppFiles(veracodeAPI, getOutputFile(), getFileSet(), maxTries, waitTime, deleteBool)
         println "results file: ${getOutputFile()}"
     }
 }

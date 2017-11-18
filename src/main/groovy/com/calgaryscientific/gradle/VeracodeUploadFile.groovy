@@ -30,6 +30,26 @@ import groovy.transform.CompileStatic
 
 @CompileStatic
 class VeracodeUploadFile {
+    static void uploadAppFiles(VeracodeAPI veracodeAPI, File outputFile, Set<File> fileSet, Integer maxTries, Integer waitTime, Boolean delete) {
+        fileSet.each { file ->
+            uploadFile(file, maxTries, waitTime, veracodeAPI, outputFile, false)
+            if (delete) {
+                println("Deleting ${file}")
+                file.delete()
+            }
+        }
+    }
+
+    static void uploadSandboxFiles(VeracodeAPI veracodeAPI, File outputFile, Set<File> fileSet, Integer maxTries, Integer waitTime, Boolean delete) {
+        fileSet.each { file ->
+            uploadFile(file, maxTries, waitTime, veracodeAPI, outputFile, true)
+            if (delete) {
+                println("Deleting ${file}")
+                file.delete()
+            }
+        }
+    }
+
     static void uploadFile(File file, Integer maxTries, Integer waitTime, VeracodeAPI veracodeAPI, File outputFile, boolean sandbox) {
         Exception error
         Integer tries = 1;

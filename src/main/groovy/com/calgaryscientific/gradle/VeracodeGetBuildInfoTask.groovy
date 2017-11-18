@@ -38,12 +38,11 @@ class VeracodeGetBuildInfoTask extends VeracodeTask {
         requiredArguments << 'app_id'
         optionalArguments << 'build_id'
         app_id = project.findProperty("app_id")
-        if (project.hasProperty('build_id')) {
-            build_id = project.findProperty('build_id')
-            defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-${build_id}.xml")
-        } else {
-            defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-latest.xml")
-        }
+        build_id = project.findProperty('build_id')
+    }
+
+    File getOutputFile() {
+        VeracodeBuildInfo.getFile("${project.buildDir}/veracode", app_id, build_id)
     }
 
     void run() {

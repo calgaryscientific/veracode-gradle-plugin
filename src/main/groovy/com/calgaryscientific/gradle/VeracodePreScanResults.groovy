@@ -30,6 +30,20 @@ import groovy.transform.CompileStatic
 
 @CompileStatic
 class VeracodePreScanResults {
+    static File getFile(String dir, String app_id, String build_id) {
+        if (build_id) {
+            return new File(dir, "prescanresults-${app_id}-${build_id}.xml")
+        }
+        return new File(dir, "prescanresults-${app_id}-latest.xml")
+    }
+
+    static File getSandboxFile(String dir, String app_id, String sandbox_id, String build_id) {
+        if (build_id) {
+            return new File(dir, "prescanresults-${app_id}-${sandbox_id}-${build_id}.xml")
+        }
+        return new File(dir, "prescanresults-${app_id}-${sandbox_id}-latest.xml")
+    }
+
     static void printModuleStatus(Node xml) {
         XMLIO.getNodeList(xml, 'module').each { module ->
             printf "id=%s name=\"%s\" status=\"%s\"\n", XMLIO.getNodeAttributes(module, 'id', 'name', 'status')

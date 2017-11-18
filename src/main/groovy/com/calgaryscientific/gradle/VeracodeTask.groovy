@@ -47,15 +47,18 @@ abstract class VeracodeTask extends DefaultTask {
     List<String> requiredArguments = []
     List<String> optionalArguments = []
     final static Map<String, String> validArguments = [
-            'app_id'           : '123',
-            'sandbox_id'       : '123',
-            'build_id'         : '123',
-            'flaw_id'          : '123',
-            'flaw_id_list'     : '123',
-            'build_version'    : 'xxx',
-            'sandbox_name'     : 'xxx',
-            'file_id'          : '123',
-            'maxUploadAttempts': '123',
+            'app_id'                 : '123',
+            'sandbox_id'             : '123',
+            'build_id'               : '123',
+            'flaw_id'                : '123',
+            'flaw_id_list'           : '123',
+            'build_version'          : 'xxx',
+            'sandbox_name'           : 'xxx',
+            'file_id'                : '123',
+            'maxUploadAttempts'      : '123',
+            'waitTimeBetweenAttempts': '123',
+            'delete'                 : 'true',
+            'ignoreFailure'          : 'true',
     ]
 
     VeracodeTask() {

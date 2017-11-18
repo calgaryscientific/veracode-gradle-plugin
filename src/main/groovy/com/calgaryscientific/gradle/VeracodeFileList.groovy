@@ -30,6 +30,20 @@ import groovy.transform.CompileStatic
 
 @CompileStatic
 class VeracodeFileList {
+    static File getFile(String dir, String app_id, String build_id) {
+        if (build_id) {
+            return new File(dir, "filelist-${app_id}-${build_id}.xml")
+        }
+        return new File(dir, "filelist-${app_id}-latest.xml")
+    }
+
+    static File getSandboxFile(String dir, String app_id, String sandbox_id, build_id) {
+        if (build_id) {
+            return new File(dir, "filelist-${app_id}-${sandbox_id}-${build_id}.xml")
+        }
+        return new File(dir, "filelist-${app_id}-${sandbox_id}-latest.xml")
+    }
+
     static void printFileList(Node xml) {
         XMLIO.getNodeList(xml, 'file').each { file ->
             printf "%s=%s\n", XMLIO.getNodeAttributes(file, 'file_name', 'file_status')
