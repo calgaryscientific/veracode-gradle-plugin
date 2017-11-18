@@ -47,11 +47,6 @@ class VeracodeGetBuildInfoSandboxTask extends VeracodeTask {
         VeracodeBuildInfo.getSandboxFile("${project.buildDir}/veracode", app_id, sandbox_id, build_id)
     }
 
-    String getBuildStatus() {
-        Node buildInfo = XMLIO.writeXml(getOutputFile(), veracodeAPI.getBuildInfoSandbox(build_id))
-        return VeracodeBuildInfo.getBuildStatus(buildInfo)
-    }
-
     void run() {
         Node buildInfo = XMLIO.writeXml(getOutputFile(), veracodeAPI.getBuildInfoSandbox(build_id))
         VeracodeBuildInfo.printBuildInfo(buildInfo)
