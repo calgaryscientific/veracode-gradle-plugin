@@ -36,7 +36,7 @@ class VeracodeWorkflowSandboxTask extends VeracodeTask {
         group = 'Veracode Sandbox'
         description = "Run through the Veracode Workflow for the given 'app_id' and 'sandbox_id' using 'build_version' as the build identifier"
         requiredArguments << 'app_id' << 'sandbox_id' << 'build_version'
-        optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts' << 'delete' << 'ignoreFailure'
+        optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts' << 'delete' << 'ignoreFailure' << 'autoscan'
     }
 
     Set<File> getFileSet() {
@@ -60,7 +60,8 @@ class VeracodeWorkflowSandboxTask extends VeracodeTask {
                     veracodeSetup.maxUploadAttempts,
                     veracodeSetup.waitTimeBetweenAttempts,
                     veracodeSetup.deleteUploadedArtifacts,
-                    veracodeSetup.failWorkflowTasksOnNewFlaws
+                    veracodeSetup.failWorkflowTasksOnNewFlaws,
+                    veracodeSetup.autoscan
             )
         } catch (Exception e) {
             if (veracodeSetup.ignoreFailure) {

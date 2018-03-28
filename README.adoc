@@ -107,6 +107,7 @@ String file_id
 
 // Upload Config
 Boolean deleteUploadedArtifacts = false
+Boolean autoscan = false
 Integer maxUploadAttempts = 10
 Integer waitTimeBetweenAttempts = 5000
 Set<File> filesToUpload

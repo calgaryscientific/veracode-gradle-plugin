@@ -92,7 +92,7 @@ class VeracodeWorkflowSandboxTest extends TestCommonSetup {
         }
 
         then:
-        1 * task.veracodeAPI.beginPreScanSandbox() >> {
+        1 * task.veracodeAPI.beginPreScanSandbox(false) >> {
             return new String(buildInfoFilePreScanSuccess.readBytes())
         }
 
@@ -140,7 +140,7 @@ class VeracodeWorkflowSandboxTest extends TestCommonSetup {
         }
 
         then:
-        1 * task.veracodeAPI.beginPreScanSandbox() >> {
+        1 * task.veracodeAPI.beginPreScanSandbox(false) >> {
             return new String(buildInfoFilePreScanSuccess.readBytes())
         }
 
@@ -193,5 +193,64 @@ class VeracodeWorkflowSandboxTest extends TestCommonSetup {
             return errorXMLResponse
         }
         assert is.readLine() =~ "ERROR: Veracode API Error"
+    }
+
+    def 'Test veracodeSandboxWorkflow autoscan'() {
+        given:
+        def task = taskSetup('veracodeSandboxWorkflow')
+
+        task.veracodeSetup.app_id = "123"
+        task.veracodeSetup.sandbox_id = "456"
+        task.veracodeSetup.build_version = "new-build"
+        task.veracodeSetup.maxUploadAttempts = 1
+        task.veracodeSetup.waitTimeBetweenAttempts = 0
+        task.veracodeSetup.deleteUploadedArtifacts = false
+        task.veracodeSetup.ignoreFailure = false
+        task.veracodeSetup.sandboxFilesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+        task.veracodeSetup.moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
+        task.veracodeSetup.autoscan = true
+
+        when:
+        task.run()
+
+        then:
+        1 * task.veracodeAPI.getBuildInfoSandbox(_) >> {
+            return new String(buildInfoFileResultsReady.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.getBuildListSandbox() >> {
+            return new String(buildlistFile.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.detailedReport(_) >> {
+            return new String(detailedReportFile.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.createBuildSandbox('new-build') >> {
+            return new String(buildInfoFileIncomplete.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.uploadFileSandbox(_) >> {
+            return new String(filelistFile.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.beginPreScanSandbox(true) >> {
+            return new String(buildInfoFilePreScanSuccess.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.getPreScanResultsSandbox(_) >> {
+            return new String(preScanResultsFile.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.beginScanSandbox(_) >> {
+            return new String(buildInfoFile.readBytes())
+        }
     }
 }

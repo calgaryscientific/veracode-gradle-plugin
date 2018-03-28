@@ -44,7 +44,8 @@ class VeracodeWorkflow {
                             Integer maxTries,
                             Integer waitTime,
                             Boolean delete,
-                            Boolean failOnNewFlaws
+                            Boolean failOnNewFlaws,
+                            Boolean autoscan
     ) {
         // Work on the latest build
         String build_id = null
@@ -93,7 +94,7 @@ class VeracodeWorkflow {
             log.info("uploadFile: " + fileSet)
             VeracodeUploadFile.uploadFiles(veracodeAPI, VeracodeFileList.getFile(outputDir, app_id, build_id), fileSet, maxTries, waitTime, delete)
             log.info("beginPreScan")
-            buildInfo = XMLIO.writeXmlWithErrorCheck(VeracodeBuildInfo.getFile(outputDir, app_id, build_id), veracodeAPI.beginPreScan())
+            buildInfo = XMLIO.writeXmlWithErrorCheck(VeracodeBuildInfo.getFile(outputDir, app_id, build_id), veracodeAPI.beginPreScan(autoscan))
             buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
             log.info("buildStatus: " + buildStatus)
         }
@@ -125,7 +126,8 @@ class VeracodeWorkflow {
                                 Integer maxTries,
                                 Integer waitTime,
                                 Boolean delete,
-                                Boolean failOnNewFlaws
+                                Boolean failOnNewFlaws,
+                                Boolean autoscan
     ) {
         // Work on the latest build
         String build_id = null
@@ -174,7 +176,7 @@ class VeracodeWorkflow {
             log.info("uploadFile: " + fileSet)
             VeracodeUploadFile.uploadSandboxFiles(veracodeAPI, VeracodeFileList.getSandboxFile(outputDir, app_id, sandbox_id, build_id), fileSet, maxTries, waitTime, delete)
             log.info("beginPreScan")
-            buildInfo = XMLIO.writeXmlWithErrorCheck(VeracodeBuildInfo.getSandboxFile(outputDir, app_id, sandbox_id, build_id), veracodeAPI.beginPreScanSandbox())
+            buildInfo = XMLIO.writeXmlWithErrorCheck(VeracodeBuildInfo.getSandboxFile(outputDir, app_id, sandbox_id, build_id), veracodeAPI.beginPreScanSandbox(autoscan))
             buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
             log.info("buildStatus: " + buildStatus)
         }

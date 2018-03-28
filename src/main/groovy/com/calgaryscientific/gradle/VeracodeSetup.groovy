@@ -61,6 +61,7 @@ class VeracodeSetup {
     Integer waitTimeBetweenAttempts = 5000
     Set<File> filesToUpload
     Set<File> sandboxFilesToUpload
+    Boolean autoscan = false
 
     // Scan Config
     Set<String> moduleWhitelist

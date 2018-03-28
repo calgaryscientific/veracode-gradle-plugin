@@ -35,7 +35,7 @@ class VeracodeWorkflowTask extends VeracodeTask {
     VeracodeWorkflowTask() {
         description = "Run through the Veracode Workflow for the given 'app_id' using 'build_version' as the build identifier"
         requiredArguments << 'app_id' << 'build_version'
-        optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts' << 'deleteUploadedArtifacts' << 'ignoreFailure'
+        optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts' << 'deleteUploadedArtifacts' << 'ignoreFailure' << 'autoscan'
     }
 
     Set<File> getFileSet() {
@@ -57,7 +57,8 @@ class VeracodeWorkflowTask extends VeracodeTask {
                     veracodeSetup.maxUploadAttempts,
                     veracodeSetup.waitTimeBetweenAttempts,
                     veracodeSetup.deleteUploadedArtifacts,
-                    veracodeSetup.failWorkflowTasksOnNewFlaws
+                    veracodeSetup.failWorkflowTasksOnNewFlaws,
+                    veracodeSetup.autoscan
             )
         } catch (Exception e) {
             if (veracodeSetup.ignoreFailure) {

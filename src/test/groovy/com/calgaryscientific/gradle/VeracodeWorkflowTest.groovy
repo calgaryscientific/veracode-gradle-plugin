@@ -90,7 +90,7 @@ class VeracodeWorkflowTest extends TestCommonSetup {
         }
 
         then:
-        1 * task.veracodeAPI.beginPreScan() >> {
+        1 * task.veracodeAPI.beginPreScan(false) >> {
             return new String(buildInfoFilePreScanSuccess.readBytes())
         }
 
@@ -137,7 +137,7 @@ class VeracodeWorkflowTest extends TestCommonSetup {
         }
 
         then:
-        1 * task.veracodeAPI.beginPreScan() >> {
+        1 * task.veracodeAPI.beginPreScan(false) >> {
             return new String(buildInfoFilePreScanSuccess.readBytes())
         }
 
@@ -188,5 +188,42 @@ class VeracodeWorkflowTest extends TestCommonSetup {
             return errorXMLResponse
         }
         assert is.readLine() =~ "ERROR: Veracode API Error"
+    }
+
+    def 'Test veracodeWorkflow autoscan'() {
+        given:
+        def task = taskSetup('veracodeWorkflow')
+        task.veracodeSetup.app_id = "123"
+        task.veracodeSetup.build_version = "new-build"
+        task.veracodeSetup.autoscan = true
+        task.veracodeSetup.filesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+        task.veracodeSetup.maxUploadAttempts = 1
+        task.veracodeSetup.waitTimeBetweenAttempts = 0
+        task.veracodeSetup.deleteUploadedArtifacts = false
+        task.veracodeSetup.ignoreFailure = false
+
+        when:
+        task.run()
+
+        then:
+        1 * task.veracodeAPI.beginPreScan(true) >> {
+            return new String(buildInfoFilePreScanSuccess.readBytes())
+        }
+
+        1 * task.veracodeAPI.getBuildInfo(_) >> {
+            return new String(buildInfoFileIncomplete.readBytes())
+        }
+
+        1 * task.veracodeAPI.uploadFile(_) >> {
+            return new String(filelistFile.readBytes())
+        }
+
+        1 * task.veracodeAPI.getPreScanResults(_) >> {
+            return new String(preScanResultsFile.readBytes())
+        }
+
+        1 * task.veracodeAPI.beginScan(_) >> {
+            return new String(buildInfoFile.readBytes())
+        }
     }
 }

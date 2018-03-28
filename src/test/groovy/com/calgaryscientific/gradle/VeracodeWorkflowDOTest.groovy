@@ -55,6 +55,7 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
         Set<String> moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
         Boolean delete = false
         Boolean failOnNewFlaws = false
+        Boolean autoscan = false
         VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: [null, null, null])
 
         when:
@@ -67,7 +68,8 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
                 maxUploadAttempts,
                 waitTimeBetweenAttempts,
                 delete,
-                failOnNewFlaws
+                failOnNewFlaws,
+                autoscan
         )
 
         then:
@@ -96,7 +98,7 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
         }
 
         then:
-        1 * veracodeAPIMock.beginPreScan() >> {
+        1 * veracodeAPIMock.beginPreScan(false) >> {
             // status=Submitted to Engine
             return new String(buildInfoFile.readBytes())
         }
@@ -113,6 +115,7 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
         Set<String> moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
         Boolean delete = false
         Boolean failOnNewFlaws = false
+        Boolean autoscan = false
         VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: [null, null, null])
 
         when:
@@ -125,7 +128,8 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
                 maxUploadAttempts,
                 waitTimeBetweenAttempts,
                 delete,
-                failOnNewFlaws
+                failOnNewFlaws,
+                autoscan
         )
 
         then:
@@ -156,6 +160,7 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
         Set<String> moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
         Boolean delete = false
         Boolean failOnNewFlaws = false
+        Boolean autoscan = false
         VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: [null, null, null])
 
         when:
@@ -169,7 +174,8 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
                 maxUploadAttempts,
                 waitTimeBetweenAttempts,
                 delete,
-                failOnNewFlaws
+                failOnNewFlaws,
+                autoscan
         )
 
         then:
@@ -198,7 +204,7 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
         }
 
         then:
-        1 * veracodeAPIMock.beginPreScanSandbox() >> {
+        1 * veracodeAPIMock.beginPreScanSandbox(false) >> {
             // status=Submitted to Engine
             return new String(buildInfoFile.readBytes())
         }
@@ -216,6 +222,7 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
         Set<String> moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
         Boolean delete = false
         Boolean failOnNewFlaws = false
+        Boolean autoscan = false
         VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: [null, null, null])
 
         when:
@@ -229,7 +236,8 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
                 maxUploadAttempts,
                 waitTimeBetweenAttempts,
                 delete,
-                failOnNewFlaws
+                failOnNewFlaws,
+                autoscan
         )
 
         then:

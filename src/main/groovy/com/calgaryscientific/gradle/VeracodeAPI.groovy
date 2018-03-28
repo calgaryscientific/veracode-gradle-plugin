@@ -49,8 +49,16 @@ class VeracodeAPI {
         return veracodeAPIFactory.uploadAPI().beginPreScan(app_id)
     }
 
+    String beginPreScan(Boolean autoscan) {
+        return veracodeAPIFactory.uploadAPI().beginPreScan(app_id, null, autoscan.toString())
+    }
+
     String beginPreScanSandbox() {
         return veracodeAPIFactory.uploadAPI().beginPreScan(app_id, sandbox_id)
+    }
+
+    String beginPreScanSandbox(Boolean autoscan) {
+        return veracodeAPIFactory.uploadAPI().beginPreScan(app_id, sandbox_id, autoscan.toString())
     }
 
     String beginScan(Set<String> moduleIds) {
